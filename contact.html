@@ -84,6 +84,10 @@
     padding-left: 0;      /* Removes the default indentation */
     margin: 0;            /* Removes extra default spacing */
     }
+    .contact-block .label {
+    display: inline-block; /* Allows us to set a width */
+    width: 50px;           /* Set the width of the alignment column */
+  }
   </style>
 </head>
 <body>
@@ -106,12 +110,20 @@
     <div class="left-column">
       <h2>SMU Centre for Research on International Trade</h2>
       <p>90 Stamford Road, Level 6<br>Singapore 178903</p>
+      <p class="contact-block">
+        <span class="label"><strong>Email:</strong></span> <a href="mailto:.........@.........">.........@.........</a><br>
+        <span class="label"><strong>Tel:</strong></span> +.................. (name)<br>
+        <span class="label"></span> +.............. (name)<br>
+
+        <br> <strong>Office Hours:</strong><br>
+        <span class="label"></span> Monday to Friday: 8:30am – 5:45pm<br>
+        <span class="label"></span> Closed on Weekends & Public Holidays
+      </p>
       
       <!--<p><strong>Email:</strong> <a href="mailto:soetrade@smu.edu.sg">soetrade@smu.edu.sg</a><br>
       <strong>Tel:</strong> +65 6828 0830 (CHANG, Pao-Li)<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong>  +65 6828 0876 (MA, Lin)</p>-->
-
-      <dl>
+      <!--<dl>
         <dt>Email:</dt>
         <dd><a href="mailto:soetrade@smu.edu.sg">soetrade@smu.edu.sg</a></dd>
         <dt>Tel:</dt>
@@ -121,7 +133,8 @@
         <dd>Monday to Friday: 8:30am – 5:45pm</dd>
         <dd>Closed on Weekends & Public Holidays</dd>
       </dl>
-      <!--<p><strong>Office Hours:</strong><br>
+      
+      <p><strong>Office Hours:</strong><br>
       Monday to Friday: 8:30am – 5:45pm<br>
       Closed on Weekends & Public Holidays</p>-->
       
