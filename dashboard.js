@@ -3,7 +3,7 @@
 // ========================================================
 
 // === CONFIGURATION ===
-const dataPath = "data/tariff_data.csv";  // Path to your CSV file
+const dataPath = "https://drive.google.com/uc?export=download&id=1KtN_bwmwOVMBy0rRQMtDRQqwMbU3ltEF";  // Path to your CSV file
 
 // === GLOBAL VARIABLES ===
 let tariffData = [];
@@ -217,4 +217,5 @@ function updateSummary(data) {
 document.getElementById("applyFilters").addEventListener("click", applyFilters);
 
 // === INITIALIZE ON LOAD ===
+
 loadCSV();
