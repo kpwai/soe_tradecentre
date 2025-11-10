@@ -3,7 +3,7 @@
 // ========================================================
 
 // === CONFIGURATION ===
-const dataPath = "data/tariff_data_sample.csv";  // Path to your CSV file
+const dataPath = "https://raw.githubusercontent.com/kpwai/soe_tradecentre/refs/heads/main/data/tariff_data_sample.csv";  // Path to your CSV file
 
 // === GLOBAL VARIABLES ===
 let tariffData = [];
@@ -231,6 +231,7 @@ async function loadCSV() {
       "<p style='color:red'>Failed to load tariff data. Please check the Google Drive link or your internet connection.</p>";
   }
 }
+
 
 
 
