@@ -2,19 +2,29 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>News | SMU Centre for Research on International Trade</title>
+
+  <!-- === Global Page Styles === -->
   <style>
+    /* Base */
     html, body {
       font-family: Georgia, serif;
+      background-color: #f8f9fa;
+      margin: 0;
+      padding: 0;
+      color: #333;
     }
-     nav {
+
+    /* Navbar */
+    nav {
       background-color: #003366;
       display: flex;
       justify-content: center;
       flex-wrap: wrap;
       padding: 1rem 0;
-      font-family: Georgia, serif;
     }
+
     nav a {
       color: white;
       text-decoration: none;
@@ -25,58 +35,165 @@
       border-radius: 4px 4px 0 0;
       transition: background-color 0.3s, color 0.3s;
     }
+
     nav a:hover {
       background-color: #ffcc00;
       color: #003366;
-      text-decoration: none;
     }
+
     nav a.active {
       background-color: #ffcc00;
       color: #003366;
     }
-    p {
-      font-family: Georgia, serif;
-      font-size: 18px;
-      line-height: 1.6;
-      margin: 1.5rem auto;
-      color: #333333;
-      text-align: justify;
-    }
-    h1 {
-      font-family: Georgia, serif;
-      font-weight: bold;
-      color: #003366;
-      text-align: left;
-      margin: 1.5rem auto;
-    }
+
+    /* Layout Container */
     .container {
-      max-width: 900px;
+      max-width: 1100px;
       margin: 2rem auto;
-      padding: 1rem;
-      background: #f8f9fa;
+      padding: 2rem;
+      background: #fff;
       border-radius: 8px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.1);
+    }
+
+    h1, h2, h3 {
+      color: #003366;
       font-family: Georgia, serif;
     }
+
+    h1 {
+      margin-top: 0;
+      border-bottom: 2px solid #003366;
+      padding-bottom: 0.5rem;
+    }
+
+    p, label, select, button {
+      font-family: Georgia, serif;
+      font-size: 1rem;
+    }
+
+    /* News Section */
     ul {
       list-style-type: none;
       padding-left: 0;
+      margin: 1rem 0 2rem 0;
     }
+
     li {
-      background: white;
+      background: #fdfdfd;
       margin-bottom: 0.75rem;
       padding: 1rem;
       border-radius: 6px;
-      box-shadow: 0 0 4px rgba(0,0,0,0.1);
-      font-family: Georgia, serif;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
+
+    li strong {
+      font-size: 1.1rem;
+    }
+
     li small {
       color: #666;
-      font-size: 1.0rem;
+      font-size: 0.95rem;
+    }
+
+    /* Dashboard Controls */
+    #controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    #controls label {
+      font-weight: bold;
+      color: #003366;
+    }
+
+    select, button {
+      padding: 0.4rem 0.6rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    button {
+      background-color: #003366;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #ffcc00;
+      color: #003366;
+    }
+
+    /* Tables */
+    table.dataTable {
+      border-collapse: collapse;
+      width: 100%;
+      background: #fff;
+      font-size: 0.95rem;
+    }
+
+    table.dataTable thead {
+      background-color: #003366;
+      color: white;
+    }
+
+    table.dataTable th,
+    table.dataTable td {
+      padding: 0.6rem;
+      text-align: center;
+      border: 1px solid #ddd;
+    }
+
+    #summary {
+      margin-top: 2rem;
+      background: #f8f9fa;
+      padding: 1rem;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+    }
+
+    #summary h3 {
+      margin-top: 0;
+    }
+
+    #summary-title {
+      font-style: italic;
+      color: #444;
+      margin-bottom: 0.5rem;
+    }
+
+    #tariffChart {
+      margin: 2rem 0;
+    }
+
+    footer {
+      text-align: center;
+      background-color: #003366;
+      color: white;
+      padding: 1rem;
+      margin-top: 3rem;
+    }
+
+    @media (max-width: 768px) {
+      #controls {
+        flex-direction: column;
+        align-items: flex-start;
+      }
     }
   </style>
+
+  <!-- DataTables CSS -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
 </head>
+
 <body>
 
+<!-- === Navigation === -->
 <nav>
   <a href="index.html">Home</a>
   <a href="about.html">About</a>
@@ -88,31 +205,22 @@
   <a href="contact.html">Contact</a>
 </nav>
 
+<!-- === Page Content === -->
 <div class="container">
   <h1>Latest News</h1>
   <ul>
     <li>
-      <strong>Site Launched!</strong> <br />
+      <strong>Site Launched!</strong><br />
       <small>January 1, 2026</small>
     </li>
-   <!-- <li>
-      <strong>New Dataset Released</strong> <br />
-      <small>August 10, 2025</small>
-    </li>
-    <li>
-      <strong>Upcoming Event: Seminar on Economics</strong> <br />
-      <small>September 5, 2025</small>
-    </li>-->
-  </ul>
-</div>
   </ul>
 
   <!-- === Trade Model Dashboard Section === -->
   <section id="trade-dashboard">
-    <h2 style="color:#003366;">Trade Model (CP) Equilibrium Dashboard</h2>
+    <h2>Trade Model (CP) Equilibrium Dashboard</h2>
 
-    <!-- Filter controls -->
-    <div id="controls" style="margin-bottom: 1.5rem;">
+    <!-- Filter Controls -->
+    <div id="controls">
       <label>Importer:</label>
       <select id="importerSelect"></select>
 
@@ -126,13 +234,13 @@
     </div>
 
     <!-- Chart -->
-    <div id="tariffChart" style="margin-bottom: 2rem;"></div>
+    <div id="tariffChart"></div>
 
     <!-- Summary Table -->
     <section id="summary">
       <h3>Details</h3>
-      <p id="summary-title" style="font-style:italic;"></p>
-      <table id="summaryTable" class="display" style="width:100%;">
+      <p id="summary-title"></p>
+      <table id="summaryTable" class="display">
         <thead>
           <tr>
             <th>Partner</th>
@@ -149,9 +257,9 @@
     </section>
 
     <!-- Full Data Table -->
-    <section id="details" style="margin-top:2rem;">
+    <section id="details">
       <h3>Tariff Action Records</h3>
-      <table id="tariffTable" class="display" style="width:100%;">
+      <table id="tariffTable" class="display">
         <thead>
           <tr>
             <th>Importer</th>
@@ -166,17 +274,18 @@
       </table>
     </section>
   </section>
+</div>
 
-</div> <!-- closes .container -->
-  
-<!-- Dependencies -->
+<footer>
+  &copy; 2026 SMU Centre for Research on International Trade
+</footer>
+
+<!-- === Dependencies === -->
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-
-<!-- Dashboard Script -->
 <script src="dashboard.js"></script>
+
 </body>
 </html>
