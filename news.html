@@ -73,6 +73,40 @@
       color: #666;
       font-size: 1.0rem;
     }
+      <!-- === Trade Model Dashboard Section === -->
+  <section id="trade-dashboard">
+    <h2 style="color:#003366;">Trade Model (CP) Equilibrium Dashboard</h2>
+
+    <!-- Filter controls -->
+    <div id="controls" style="margin-bottom: 1.5rem;">
+      <label>Importer:</label>
+      <select id="importerSelect"></select>
+
+      <label>Exporter:</label>
+      <select id="exporterSelect"></select>
+
+      <label>HS Code:</label>
+      <select id="productSelect"></select>
+
+      <button id="applyFilters">Apply Filters</button>
+    </div>
+
+    <!-- Chart -->
+    <div id="tariffChart" style="margin-bottom: 2rem;"></div>
+
+    <!-- Summary Table -->
+    <section id="summary">
+      <h3>Details</h3>
+      <p id="summary-title" style="font-style:italic;"></p>
+      <table id="summaryTable" class="display" style="width:100%;"></table>
+    </section>
+
+    <!-- Full Data Table -->
+    <section id="details" style="margin-top:2rem;">
+      <h3>Tariff Action Records</h3>
+      <table id="tariffTable" class="display" style="width:100%;"></table>
+    </section>
+  </section>
   </style>
 </head>
 <body>
@@ -105,6 +139,14 @@
     </li>-->
   </ul>
 </div>
+<!-- Dependencies -->
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
+<!-- Dashboard Script -->
+<script src="dashboard.js"></script>
 </body>
 </html>
