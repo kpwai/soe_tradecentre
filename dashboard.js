@@ -3,7 +3,7 @@
 // ========================================================
 
 // === CONFIGURATION ===
-const dataPath = "https://drive.google.com/uc?export=download&id=1KtN_bwmwOVMBy0rRQMtDRQqwMbU3ltEF";  // Path to your CSV file
+const dataPath = "https://drive.google.com/uc?export=download&id=1KtN_bwmwOVMBy0rRQMtDRQqwMbU3ltEF&confirm=t";  // Path to your CSV file
 
 // === GLOBAL VARIABLES ===
 let tariffData = [];
@@ -231,4 +231,5 @@ async function loadCSV() {
       "<p style='color:red'>Failed to load tariff data. Please check the Google Drive link or your internet connection.</p>";
   }
 }
+
 
