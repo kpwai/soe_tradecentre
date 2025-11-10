@@ -219,3 +219,16 @@ document.getElementById("applyFilters").addEventListener("click", applyFilters);
 // === INITIALIZE ON LOAD ===
 
 loadCSV();
+async function loadCSV() {
+  try {
+    const response = await fetch(dataPath);
+    if (!response.ok) throw new Error("Unable to fetch data file");
+    const csvText = await response.text();
+    ...
+  } catch (error) {
+    console.error("Error loading CSV:", error);
+    document.getElementById("tariffChart").innerHTML =
+      "<p style='color:red'>Failed to load tariff data. Please check the Google Drive link or your internet connection.</p>";
+  }
+}
+
