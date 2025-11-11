@@ -41,7 +41,7 @@ async function loadCSV() {
       "<p style='color:red'>⚠️ Failed to load tariff data. Please check the CSV link or your internet connection.</p>";
   }
 }
-
+/*
 // === POPULATE DROPDOWNS ===
 function populateDropdowns() {
   const importers = [...new Set(tariffData.map(d => d.importer))];
@@ -61,6 +61,36 @@ function populateSelect(id, values) {
   const select = document.getElementById(id);
   if (!select) return;
   select.innerHTML = '<option value="">All</option>' +
+    values.map(v => `<option value="${v}">${v}</option>`).join('');
+}*/
+
+// === POPULATE DROPDOWNS ===
+function populateDropdowns() {
+  // Importer will always be 'United States' (fixed)
+  const importerSelect = document.getElementById("importerSelect");
+  if (importerSelect) {
+    importerSelect.innerHTML = `<option value="United States" selected>United States</option>`;
+  }
+
+  // Populate Exporter, Product, and Date normally
+  const exporters = [...new Set(tariffData.map(d => d.exporter))];
+  const products  = [...new Set(tariffData.map(d => d.product))];
+  const dates     = [...new Set(
+    tariffData.map(d => d.date_eff.toLocaleDateString())
+  )].sort((a, b) => new Date(a) - new Date(b));
+
+  populateSelect("exporterSelect", exporters, "World");
+  populateSelect("productSelect", products, "All");
+  populateSelect("dateSelect", dates, "All");
+}
+
+// === POPULATE SELECT DROPDOWN ===
+function populateSelect(id, values, defaultLabel = "All") {
+  const select = document.getElementById(id);
+  if (!select) return;
+
+  // Replace "All" with "World" for exporter dropdown
+  select.innerHTML = `<option value="">${defaultLabel}</option>` +
     values.map(v => `<option value="${v}">${v}</option>`).join('');
 }
 
@@ -202,3 +232,4 @@ document.getElementById("applyFilters").addEventListener("click", applyFilters);
 
 // === INITIALIZE ===
 loadCSV();
+
