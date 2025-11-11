@@ -95,7 +95,7 @@ function populateSelect(id, values, defaultLabel = "All") {
 }
 
 // === APPLY FILTERS ===
-function applyFilters() {
+/*function applyFilters() {
   const importer = document.getElementById("importerSelect").value;
   const exporter = document.getElementById("exporterSelect").value;
   const product  = document.getElementById("productSelect").value;
@@ -110,6 +110,34 @@ function applyFilters() {
     (!product || d.product === product) &&
     (!selectedDate || d.date_eff.toDateString() === selectedDate.toDateString())
   );
+
+  drawChart(filtered);
+  updateSummary(filtered);
+}*/
+function applyFilters() {
+  const importer = document.getElementById("importerSelect").value;
+  const exporter = document.getElementById("exporterSelect").value;
+  const product  = document.getElementById("productSelect").value;
+  const date_eff = document.getElementById("dateSelect").value;
+
+  // Convert selected date (YYYY-MM-DD) to a comparable Date object
+  const selectedDate = date_eff ? new Date(date_eff) : null;
+
+  const filtered = tariffData.filter(d => {
+    // Compare year/month/day manually to avoid time zone issues
+    const sameDate =
+      !selectedDate ||
+      (d.date_eff.getFullYear() === selectedDate.getFullYear() &&
+       d.date_eff.getMonth() === selectedDate.getMonth() &&
+       d.date_eff.getDate() === selectedDate.getDate());
+
+    return (
+      (!importer || d.importer === importer) &&
+      (!exporter || d.exporter === exporter) &&
+      (!product || d.product === product) &&
+      sameDate
+    );
+  });
 
   drawChart(filtered);
   updateSummary(filtered);
@@ -235,3 +263,4 @@ document.getElementById("applyFilters").addEventListener("click", applyFilters);
 
 // === INITIALIZE ===
 loadCSV();
+
