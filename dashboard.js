@@ -207,13 +207,13 @@ function updateSummary(data) {
   const exporterLabel = exporter === "" ? "World" : exporter;
   summaryTitle.textContent = `${importer} imports from ${exporterLabel} — ${product}`;
 
-  // ✅ Normalize exporter filter (handle case differences and trim)
+  // Normalize exporter filter (handle case differences and trim)
   let filteredData = data;
   if (exporter && exporter.toLowerCase() !== "world") {
     filteredData = data.filter(d => d.exporter.trim().toLowerCase() === exporter.trim().toLowerCase());
   }
 
-  // ✅ If no filtered data found, show message
+  // If no filtered data found, show message
   if (filteredData.length === 0) {
     tbody.innerHTML = "<tr><td colspan='7'>No matching data for this selection</td></tr>";
     return;
@@ -279,4 +279,3 @@ document.getElementById("applyFilters").addEventListener("click", applyFilters);
 
 // === INITIALIZE ===
 loadCSV();
-
