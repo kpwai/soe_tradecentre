@@ -110,10 +110,12 @@
       color: #003366;
     }
 
-    select, button {
+    select, button, input[type="date"] {
       padding: 0.4rem 0.6rem;
       border: 1px solid #ccc;
       border-radius: 4px;
+      font-family: Georgia, serif;
+      font-size: 1rem;
     }
 
     button {
@@ -127,6 +129,29 @@
     button:hover {
       background-color: #ffcc00;
       color: #003366;
+    }
+
+    /* === Scrollable Dropdowns for Exporter and Product === */
+    #exporterSelect,
+    #productSelect {
+      max-height: 200px;          /* limit visible height */
+      overflow-y: auto;           /* enable scroll when too long */
+      display: block;
+      width: 250px;
+      padding: 0.4rem 0.6rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background-color: #fff;
+      font-family: Georgia, serif;
+      font-size: 1rem;
+      color: #333;
+    }
+
+    #exporterSelect:focus,
+    #productSelect:focus {
+      border-color: #003366;
+      outline: none;
+      box-shadow: 0 0 5px rgba(0, 51, 102, 0.4);
     }
 
     /* Tables */
@@ -208,16 +233,10 @@
 <!-- === Page Content === -->
 <div class="container">
   <h1>Trade Model (CP) Equilibrium Dashboard</h1>
-  <!--<ul>
-    <li>
-      <strong>Site Launched!</strong><br />
-      <small>January 1, 2026</small>
-    </li>
-  </ul>-->
 
   <!-- === Trade Model Dashboard Section === -->
   <section id="trade-dashboard">
-    <h2>Tariff actions</h2>
+    <h2>Tariff Actions</h2>
 
     <!-- Filter Controls -->
     <div id="controls">
@@ -230,12 +249,6 @@
       <label>Product Code:</label>
       <select id="productSelect"></select>
 
-      <!--<label>Date Effected:</label>
-      <select id="dateSelect"></select>
-
-      <label>Date Effected:</label>
-      <input type="date" id="dateSelect" />-->
-      
       <label>From:</label>
       <input type="date" id="dateFrom">
 
@@ -267,24 +280,6 @@
         <tbody></tbody>
       </table>
     </section>
-
-    <!-- Full Data Table 
-    <section id="details">
-      <h3>Tariff Action Records</h3>
-      <table id="tariffTable" class="display">
-        <thead>
-          <tr>
-            <th>Importer</th>
-            <th>Exporter</th>
-            <th>Product (HS Code)</th>
-            <th>Date Effective</th>
-            <th>Applied Tariff (%)</th>
-            <th>Import Value (USD)</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </section>-->
   </section>
 </div>
 
@@ -297,7 +292,6 @@
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<!--<script src="dashboard.js"></script>-->
 
 <!-- Dashboard Script --> 
 <script src="dashboard.js"></script>
