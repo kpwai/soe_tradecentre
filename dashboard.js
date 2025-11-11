@@ -205,7 +205,7 @@ function updateSummary(data) {
   const product  = document.getElementById("productSelect").value || "All products";
 
   const exporterLabel = exporter === "" ? "World" : exporter;
-  summaryTitle.textContent = `${importer} imports from ${exporterLabel} — ${product}`;
+  summaryTitle.textContent = `${importer} imports from ${exporterLabel} - ${product}`;
 
   // Normalize exporter filter (handle case differences and trim)
   let filteredData = data;
@@ -279,3 +279,4 @@ document.getElementById("applyFilters").addEventListener("click", applyFilters);
 
 // === INITIALIZE ===
 loadCSV();
+
