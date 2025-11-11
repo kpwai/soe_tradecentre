@@ -187,7 +187,7 @@ function drawChart(data, isAggregated = false) {
   };
 
   /*Plotly.newPlot("tariffChart", [trace1, trace2], layout);*/
-  Plotly.newPlot("tariffChart", [trace1], layout);
+  Plotly.newPlot("tariffChart", [trace1, trace2], layout);
 }
 
 // === SUMMARY TABLE ===
@@ -280,6 +280,7 @@ document.getElementById("applyFilters").addEventListener("click", applyFilters);
 
 // === INITIALIZE ===
 loadCSV();
+
 
 
 
