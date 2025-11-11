@@ -41,6 +41,7 @@ async function loadCSV() {
       "<p style='color:red'>⚠️ Failed to load tariff data. Please check the CSV link or your internet connection.</p>";
   }
 }
+
 /*
 // === POPULATE DROPDOWNS ===
 function populateDropdowns() {
@@ -66,22 +67,22 @@ function populateSelect(id, values) {
 
 // === POPULATE DROPDOWNS ===
 function populateDropdowns() {
-  // Importer will always be 'United States' (fixed)
+  // Importer is always 'United States' (fixed)
   const importerSelect = document.getElementById("importerSelect");
   if (importerSelect) {
     importerSelect.innerHTML = `<option value="United States" selected>United States</option>`;
   }
 
-  // Populate Exporter, Product, and Date normally
+  // Populate Exporter and Product lists from the data
   const exporters = [...new Set(tariffData.map(d => d.exporter))];
   const products  = [...new Set(tariffData.map(d => d.product))];
-  const dates     = [...new Set(
-    tariffData.map(d => d.date_eff.toLocaleDateString())
-  )].sort((a, b) => new Date(a) - new Date(b));
 
+  // Fill exporter dropdown (default = World)
   populateSelect("exporterSelect", exporters, "World");
+  // Fill product dropdown (default = All)
   populateSelect("productSelect", products, "All");
-  populateSelect("dateSelect", dates, "All");
+
+  // Date is now manual calendar input, not populated from data
 }
 
 // === POPULATE SELECT DROPDOWN ===
@@ -89,7 +90,6 @@ function populateSelect(id, values, defaultLabel = "All") {
   const select = document.getElementById(id);
   if (!select) return;
 
-  // Replace "All" with "World" for exporter dropdown
   select.innerHTML = `<option value="">${defaultLabel}</option>` +
     values.map(v => `<option value="${v}">${v}</option>`).join('');
 }
@@ -101,11 +101,14 @@ function applyFilters() {
   const product  = document.getElementById("productSelect").value;
   const date_eff = document.getElementById("dateSelect").value;
 
+  // Convert selected date (YYYY-MM-DD) to comparable Date object
+  const selectedDate = date_eff ? new Date(date_eff) : null;
+
   const filtered = tariffData.filter(d =>
     (!importer || d.importer === importer) &&
     (!exporter || d.exporter === exporter) &&
     (!product || d.product === product) &&
-    (!date_eff || d.date_eff.toLocaleDateString() === date_eff)
+    (!selectedDate || d.date_eff.toDateString() === selectedDate.toDateString())
   );
 
   drawChart(filtered);
@@ -169,7 +172,7 @@ function updateSummary(data) {
     return;
   }
 
-  const importer = document.getElementById("importerSelect").value || "All importers";
+  const importer = document.getElementById("importerSelect").value || "United States";
   const exporter = document.getElementById("exporterSelect").value || "World";
   const product = document.getElementById("productSelect").value || "All products";
 
@@ -232,4 +235,3 @@ document.getElementById("applyFilters").addEventListener("click", applyFilters);
 
 // === INITIALIZE ===
 loadCSV();
-
