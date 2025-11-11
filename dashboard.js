@@ -3,7 +3,7 @@
 // ========================================================
 
 // === CONFIGURATION ===
-const dataPath = "data/tariff_data.csv";  // Path to your CSV file
+const dataPath = "data/tariff_data.csv";  // Path to CSV file
 
 // === GLOBAL VARIABLES ===
 let tariffData = [];
