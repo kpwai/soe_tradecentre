@@ -120,11 +120,15 @@ function applyFilters() {
   const product  = document.getElementById("productSelect").value;
   const date_eff = document.getElementById("dateSelect").value;
 
-  // Convert selected date (YYYY-MM-DD) to a comparable Date object
-  const selectedDate = date_eff ? new Date(date_eff) : null;
+  // Convert selected date (YYYY-MM-DD) into month/day/year for comparison
+  let selectedDate = null;
+  if (date_eff) {
+    const [year, month, day] = date_eff.split("-");
+    selectedDate = new Date(`${month}/${day}/${year}`); // Convert to local M/D/Y
+  }
 
   const filtered = tariffData.filter(d => {
-    // Compare year/month/day manually to avoid time zone issues
+    // Handle date matching based on M/D/Y input format
     const sameDate =
       !selectedDate ||
       (d.date_eff.getFullYear() === selectedDate.getFullYear() &&
@@ -263,4 +267,5 @@ document.getElementById("applyFilters").addEventListener("click", applyFilters);
 
 // === INITIALIZE ===
 loadCSV();
+
 
