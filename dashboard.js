@@ -7,31 +7,39 @@ const dataPath = "data/tariff_data.csv";  // Path to your CSV file
 
 // === GLOBAL VARIABLES ===
 let tariffData = [];
-let dataTable;
 
 // === LOAD CSV ===
 async function loadCSV() {
-  const response = await fetch(dataPath);
-  const csvText = await response.text();
+  try {
+    console.log("Fetching:", dataPath);
+    const response = await fetch(dataPath);
+    if (!response.ok) throw new Error("Unable to fetch data file");
 
-  const results = Papa.parse(csvText, {
-    header: true,
-    skipEmptyLines: true,
-  });
+    const csvText = await response.text();
+    const results = Papa.parse(csvText, {
+      header: true,
+      skipEmptyLines: true,
+    });
 
-  tariffData = results.data.map(row => ({
-    importer: row.importer?.trim() || "",
-    exporter: row.exporter?.trim() || "",
-    product: row.product?.trim() || "",
-    date_eff: new Date(row.date_eff),
-    applied_tariff: parseFloat(row.applied_tariff || 0),
-    imports_value_usd: parseFloat(row.imports_value_usd || 0),
-  }));
+    tariffData = results.data.map(row => ({
+      importer: row.importer?.trim() || "",
+      exporter: row.exporter?.trim() || "",
+      product: row.product?.trim() || "",
+      date_eff: new Date(row.date_eff),
+      applied_tariff: parseFloat(row.applied_tariff || 0),
+      imports_value_usd: parseFloat(row.imports_value_usd || 0),
+    }));
 
-  populateDropdowns();
-  drawChart(tariffData);
-  populateTable(tariffData);
-  updateSummary(tariffData);
+    console.log("Rows loaded:", tariffData.length);
+    populateDropdowns();
+    drawChart(tariffData);
+    updateSummary(tariffData);
+
+  } catch (error) {
+    console.error("Error loading CSV:", error);
+    document.getElementById("tariffChart").innerHTML =
+      "<p style='color:red'>⚠️ Failed to load tariff data. Please check the CSV link or your internet connection.</p>";
+  }
 }
 
 // === POPULATE DROPDOWNS ===
@@ -39,14 +47,19 @@ function populateDropdowns() {
   const importers = [...new Set(tariffData.map(d => d.importer))];
   const exporters = [...new Set(tariffData.map(d => d.exporter))];
   const products  = [...new Set(tariffData.map(d => d.product))];
+  const dates     = [...new Set(
+    tariffData.map(d => d.date_eff.toLocaleDateString())
+  )].sort((a, b) => new Date(a) - new Date(b));
 
   populateSelect("importerSelect", importers);
   populateSelect("exporterSelect", exporters);
   populateSelect("productSelect", products);
+  populateSelect("dateSelect", dates); // New dropdown for dates
 }
 
 function populateSelect(id, values) {
   const select = document.getElementById(id);
+  if (!select) return;
   select.innerHTML = '<option value="">All</option>' +
     values.map(v => `<option value="${v}">${v}</option>`).join('');
 }
@@ -55,16 +68,17 @@ function populateSelect(id, values) {
 function applyFilters() {
   const importer = document.getElementById("importerSelect").value;
   const exporter = document.getElementById("exporterSelect").value;
-  const product = document.getElementById("productSelect").value;
+  const product  = document.getElementById("productSelect").value;
+  const date_eff = document.getElementById("dateSelect").value;
 
   const filtered = tariffData.filter(d =>
     (!importer || d.importer === importer) &&
     (!exporter || d.exporter === exporter) &&
-    (!product || d.product === product)
+    (!product || d.product === product) &&
+    (!date_eff || d.date_eff.toLocaleDateString() === date_eff)
   );
 
   drawChart(filtered);
-  populateTable(filtered);
   updateSummary(filtered);
 }
 
@@ -114,31 +128,6 @@ function drawChart(data) {
   Plotly.newPlot("tariffChart", [trace1, trace2], layout);
 }
 
-// === POPULATE FULL DATA TABLE ===
-function populateTable(data) {
-  const tbody = document.querySelector("#tariffTable tbody");
-  if (!tbody) return;
-
-  tbody.innerHTML = data.map(d => `
-    <tr>
-      <td>${d.importer}</td>
-      <td>${d.exporter}</td>
-      <td>${d.product}</td>
-      <td>${d.date_eff.toLocaleDateString()}</td>
-      <td>${d.applied_tariff.toFixed(3)}</td>
-      <td>${d.imports_value_usd.toFixed(3)}</td>
-    </tr>
-  `).join("");
-
-  if ($.fn.DataTable.isDataTable("#tariffTable")) {
-    $("#tariffTable").DataTable().destroy();
-  }
-  $("#tariffTable").DataTable({
-    pageLength: 5,
-    order: [[3, "asc"]],
-  });
-}
-
 // === SUMMARY TABLE (WTO-style Details) ===
 function updateSummary(data) {
   const tbody = document.querySelector("#summaryTable tbody");
@@ -150,14 +139,12 @@ function updateSummary(data) {
     return;
   }
 
-  // Derive importer/exporter and product from selection
   const importer = document.getElementById("importerSelect").value || "All importers";
   const exporter = document.getElementById("exporterSelect").value || "World";
   const product = document.getElementById("productSelect").value || "All products";
 
   summaryTitle.textContent = `${importer} imports from ${exporter} — ${product}`;
 
-  // Group data by partner and date
   const grouped = {};
   data.forEach(d => {
     const key = `${d.exporter}_${d.date_eff.toLocaleDateString()}`;
@@ -173,7 +160,6 @@ function updateSummary(data) {
     grouped[key].values.push(d.imports_value_usd);
   });
 
-  // Compute summary metrics
   const summaryRows = Object.values(grouped).map(g => {
     const simpleAvg = g.tariffs.reduce((a,b)=>a+b,0) / g.tariffs.length;
     const totalTrade = g.values.reduce((a,b)=>a+b,0);
@@ -185,12 +171,11 @@ function updateSummary(data) {
       simpleAvg: simpleAvg.toFixed(3),
       tradeWeighted: tradeWeighted.toFixed(3),
       tradeValue: totalTrade.toFixed(3),
-      tradeShare: "100%",          // Placeholder for now
+      tradeShare: "100%",
       tariffLineShare: "100%"
     };
   });
 
-  // Populate table
   tbody.innerHTML = summaryRows.map(r => `
     <tr>
       <td>${r.partner}</td>
@@ -203,7 +188,6 @@ function updateSummary(data) {
     </tr>
   `).join("");
 
-  // Re-initialize DataTable
   if ($.fn.DataTable.isDataTable("#summaryTable")) {
     $("#summaryTable").DataTable().destroy();
   }
@@ -213,26 +197,8 @@ function updateSummary(data) {
   });
 }
 
-// === EVENT LISTENERS ===
+// === EVENT LISTENER ===
 document.getElementById("applyFilters").addEventListener("click", applyFilters);
 
-// === INITIALIZE ON LOAD ===
-
+// === INITIALIZE ===
 loadCSV();
-async function loadCSV() {
-  try {
-    const response = await fetch(dataPath);
-    if (!response.ok) throw new Error("Unable to fetch data file");
-    const csvText = await response.text();
-    ...
-  } catch (error) {
-    console.error("Error loading CSV:", error);
-    document.getElementById("tariffChart").innerHTML =
-      "<p style='color:red'>Failed to load tariff data. Please check the Google Drive link or your internet connection.</p>";
-  }
-}
-
-
-
-
-
