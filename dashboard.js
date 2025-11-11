@@ -159,7 +159,7 @@ function drawChart(data, isAggregated = false) {
     marker: { size: 6 },
     line: { width: 3, color: "#003366" }
   };
-
+  /*
   const trace2 = {
     x: data.map(d => d.date_eff),
     y: data.map(d => d.imports_value_usd),
@@ -168,7 +168,7 @@ function drawChart(data, isAggregated = false) {
     yaxis: "y2",
     marker: { size: 6 },
     line: { width: 2, dash: "dot", color: "#ff9900" }
-  };
+  };*/
 
   const layout = {
     title: isAggregated
@@ -279,4 +279,5 @@ document.getElementById("applyFilters").addEventListener("click", applyFilters);
 
 // === INITIALIZE ===
 loadCSV();
+
 
