@@ -202,19 +202,26 @@ function updateSummary(data) {
 
   const importer = document.getElementById("importerSelect").value || "United States";
   const exporter = document.getElementById("exporterSelect").value || "World";
-  const product = document.getElementById("productSelect").value || "All products";
+  const product  = document.getElementById("productSelect").value || "All products";
 
   summaryTitle.textContent = `${importer} imports from ${exporter} — ${product}`;
 
+  // --- Ensure only the selected exporter is processed ---
+  let filteredData = data;
+  if (exporter && exporter !== "World") {
+    filteredData = data.filter(d => d.exporter === exporter);
+  }
+
+  // Group by exporter and date (but will only include selected exporter)
   const grouped = {};
-  data.forEach(d => {
+  filteredData.forEach(d => {
     const key = `${d.exporter}_${d.date_eff.toLocaleDateString()}`;
-    if (!grouped[key]) grouped[key] = { 
-      exporter: d.exporter, 
-      date: d.date_eff.toLocaleDateString(), 
-      tariffs: [], 
-      weightedTariffs: [], 
-      values: [] 
+    if (!grouped[key]) grouped[key] = {
+      exporter: d.exporter,
+      date: d.date_eff.toLocaleDateString(),
+      tariffs: [],
+      weightedTariffs: [],
+      values: []
     };
     grouped[key].tariffs.push(d.applied_tariff);
     grouped[key].weightedTariffs.push(d.applied_tariff * d.imports_value_usd);
@@ -222,9 +229,9 @@ function updateSummary(data) {
   });
 
   const summaryRows = Object.values(grouped).map(g => {
-    const simpleAvg = g.tariffs.reduce((a,b)=>a+b,0) / g.tariffs.length;
-    const totalTrade = g.values.reduce((a,b)=>a+b,0);
-    const tradeWeighted = g.weightedTariffs.reduce((a,b)=>a+b,0) / (totalTrade || 1);
+    const simpleAvg = g.tariffs.reduce((a, b) => a + b, 0) / g.tariffs.length;
+    const totalTrade = g.values.reduce((a, b) => a + b, 0);
+    const tradeWeighted = g.weightedTariffs.reduce((a, b) => a + b, 0) / (totalTrade || 1);
 
     return {
       partner: g.exporter,
@@ -263,3 +270,4 @@ document.getElementById("applyFilters").addEventListener("click", applyFilters);
 
 // === INITIALIZE ===
 loadCSV();
+
