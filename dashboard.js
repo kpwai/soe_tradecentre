@@ -194,35 +194,39 @@ function updateSummary(data) {
   const tbody = document.querySelector("#summaryTable tbody");
   const summaryTitle = document.getElementById("summary-title");
 
-  // Handle empty dataset
   if (!data || data.length === 0) {
     tbody.innerHTML = "<tr><td colspan='7'>No data available</td></tr>";
     summaryTitle.textContent = "";
     return;
   }
 
-  // Read the current filter selections
   const importer = document.getElementById("importerSelect").value || "United States";
-  const exporter = document.getElementById("exporterSelect").value || "";
+  const exporter = document.getElementById("exporterSelect").value?.trim() || "";
   const product  = document.getElementById("productSelect").value || "All products";
 
-  // Set the summary title
   const exporterLabel = exporter === "" ? "World" : exporter;
   summaryTitle.textContent = `${importer} imports from ${exporterLabel} — ${product}`;
 
-  // --- Filter data strictly for selected exporter (unless "World") ---
+  // ✅ Normalize exporter filter (handle case differences and trim)
   let filteredData = data;
   if (exporter && exporter.toLowerCase() !== "world") {
-    filteredData = data.filter(d => d.exporter === exporter);
+    filteredData = data.filter(d => d.exporter.trim().toLowerCase() === exporter.trim().toLowerCase());
   }
 
-  // --- Group by exporter and date ---
+  // ✅ If no filtered data found, show message
+  if (filteredData.length === 0) {
+    tbody.innerHTML = "<tr><td colspan='7'>No matching data for this selection</td></tr>";
+    return;
+  }
+
+  // Group data by exporter and date (consistent MM/DD/YYYY)
   const grouped = {};
   filteredData.forEach(d => {
-    const key = `${d.exporter}_${d.date_eff.toLocaleDateString()}`;
+    const dateKey = d.date_eff.toLocaleDateString("en-US", { month: "2-digit", day: "2-digit", year: "numeric" });
+    const key = `${d.exporter}_${dateKey}`;
     if (!grouped[key]) grouped[key] = {
       exporter: d.exporter,
-      date: d.date_eff.toLocaleDateString(),
+      date: dateKey,
       tariffs: [],
       weightedTariffs: [],
       values: []
@@ -232,12 +236,11 @@ function updateSummary(data) {
     grouped[key].values.push(d.imports_value_usd);
   });
 
-  // --- Calculate summary metrics ---
+  // Calculate averages
   const summaryRows = Object.values(grouped).map(g => {
     const simpleAvg = g.tariffs.reduce((a, b) => a + b, 0) / g.tariffs.length;
     const totalTrade = g.values.reduce((a, b) => a + b, 0);
     const tradeWeighted = g.weightedTariffs.reduce((a, b) => a + b, 0) / (totalTrade || 1);
-
     return {
       partner: g.exporter,
       date: g.date,
@@ -249,7 +252,6 @@ function updateSummary(data) {
     };
   });
 
-  // --- Rebuild the table body ---
   tbody.innerHTML = summaryRows.map(r => `
     <tr>
       <td>${r.partner}</td>
@@ -262,7 +264,6 @@ function updateSummary(data) {
     </tr>
   `).join("");
 
-  // --- Reinitialize DataTable cleanly ---
   if ($.fn.DataTable.isDataTable("#summaryTable")) {
     $("#summaryTable").DataTable().clear().destroy();
   }
@@ -278,5 +279,3 @@ document.getElementById("applyFilters").addEventListener("click", applyFilters);
 
 // === INITIALIZE ===
 loadCSV();
-
-
