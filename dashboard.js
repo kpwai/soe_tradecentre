@@ -45,7 +45,7 @@ async function loadCSV() {
   } catch (error) {
     console.error("Error loading CSV:", error);
     document.getElementById("tariffChart").innerHTML =
-      "<p style='color:red'>⚠️ Failed to load tariff data. Please check the CSV link or your internet connection.</p>";
+      "<p style='color:red'> Failed to load tariff data. Please check the CSV link or your internet connection.</p>";
   }
 }
 
@@ -279,3 +279,4 @@ document.getElementById("applyFilters").addEventListener("click", applyFilters);
 
 // === INITIALIZE ===
 loadCSV();
+
