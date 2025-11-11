@@ -186,7 +186,8 @@ function drawChart(data, isAggregated = false) {
     paper_bgcolor: "#fff"
   };
 
-  Plotly.newPlot("tariffChart", [trace1, trace2], layout);
+  /*Plotly.newPlot("tariffChart", [trace1, trace2], layout);*/
+  Plotly.newPlot("tariffChart", [trace1], layout);
 }
 
 // === SUMMARY TABLE ===
@@ -279,6 +280,7 @@ document.getElementById("applyFilters").addEventListener("click", applyFilters);
 
 // === INITIALIZE ===
 loadCSV();
+
 
 
 
