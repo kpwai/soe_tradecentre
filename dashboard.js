@@ -189,30 +189,34 @@ function drawChart(data, isAggregated = false) {
   Plotly.newPlot("tariffChart", [trace1, trace2], layout);
 }
 
-// === SUMMARY TABLE (WTO-style Details) ===
+// === SUMMARY TABLE ===
 function updateSummary(data) {
   const tbody = document.querySelector("#summaryTable tbody");
   const summaryTitle = document.getElementById("summary-title");
 
-  if (data.length === 0) {
+  // Handle empty dataset
+  if (!data || data.length === 0) {
     tbody.innerHTML = "<tr><td colspan='7'>No data available</td></tr>";
     summaryTitle.textContent = "";
     return;
   }
 
+  // Read the current filter selections
   const importer = document.getElementById("importerSelect").value || "United States";
-  const exporter = document.getElementById("exporterSelect").value || "World";
+  const exporter = document.getElementById("exporterSelect").value || "";
   const product  = document.getElementById("productSelect").value || "All products";
 
-  summaryTitle.textContent = `${importer} imports from ${exporter} — ${product}`;
+  // Set the summary title
+  const exporterLabel = exporter === "" ? "World" : exporter;
+  summaryTitle.textContent = `${importer} imports from ${exporterLabel} — ${product}`;
 
-  // --- Ensure only the selected exporter is processed ---
+  // --- Filter data strictly for selected exporter (unless "World") ---
   let filteredData = data;
-  if (exporter && exporter !== "World") {
+  if (exporter && exporter.toLowerCase() !== "world") {
     filteredData = data.filter(d => d.exporter === exporter);
   }
 
-  // Group by exporter and date (but will only include selected exporter)
+  // --- Group by exporter and date ---
   const grouped = {};
   filteredData.forEach(d => {
     const key = `${d.exporter}_${d.date_eff.toLocaleDateString()}`;
@@ -228,6 +232,7 @@ function updateSummary(data) {
     grouped[key].values.push(d.imports_value_usd);
   });
 
+  // --- Calculate summary metrics ---
   const summaryRows = Object.values(grouped).map(g => {
     const simpleAvg = g.tariffs.reduce((a, b) => a + b, 0) / g.tariffs.length;
     const totalTrade = g.values.reduce((a, b) => a + b, 0);
@@ -244,6 +249,7 @@ function updateSummary(data) {
     };
   });
 
+  // --- Rebuild the table body ---
   tbody.innerHTML = summaryRows.map(r => `
     <tr>
       <td>${r.partner}</td>
@@ -256,9 +262,11 @@ function updateSummary(data) {
     </tr>
   `).join("");
 
+  // --- Reinitialize DataTable cleanly ---
   if ($.fn.DataTable.isDataTable("#summaryTable")) {
-    $("#summaryTable").DataTable().destroy();
+    $("#summaryTable").DataTable().clear().destroy();
   }
+
   $("#summaryTable").DataTable({
     pageLength: 5,
     order: [[1, "asc"]],
@@ -270,4 +278,5 @@ document.getElementById("applyFilters").addEventListener("click", applyFilters);
 
 // === INITIALIZE ===
 loadCSV();
+
 
