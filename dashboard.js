@@ -208,42 +208,53 @@ function updateSummary(data) {
   const importer = document.getElementById("importerSelect").value || "United States";
   const exporter = document.getElementById("exporterSelect").value?.trim() || "";
   const product  = document.getElementById("productSelect").value || "All products";
-
   const exporterLabel = exporter === "" ? "World" : exporter;
   summaryTitle.textContent = `${importer} imports from ${exporterLabel} — ${product}`;
 
-  // Filter for exporter
+  // Filter exporter strictly but case-insensitive, punctuation-agnostic
   let filteredData = data;
   if (exporter && exporter.toLowerCase() !== "world") {
-    const expNorm = exporter.trim().toLowerCase();
-    filteredData = data.filter(d => (d.exporter || "").trim().toLowerCase() === expNorm);
+    const expNorm = exporter.trim().toLowerCase().replace(/[^\w\s]/g, "");
+    filteredData = data.filter(d => {
+      const expName = (d.exporter || "").trim().toLowerCase().replace(/[^\w\s]/g, "");
+      return expName === expNorm;
+    });
   }
 
-  if (!filteredData || filteredData.length === 0) {
+  if (filteredData.length === 0) {
     tbody.innerHTML = "<tr><td colspan='7'>No matching data for this selection</td></tr>";
     return;
   }
 
+  // --- Group data safely ---
   const grouped = {};
   filteredData.forEach(d => {
-    const dateKey = d.date_eff.toLocaleDateString("en-US", { month: "2-digit", day: "2-digit", year: "numeric" });
-    const key = `${d.exporter}_${dateKey}`;
-    if (!grouped[key]) grouped[key] = {
-      exporter: d.exporter,
-      date: dateKey,
-      tariffs: [],
-      weightedTariffs: [],
-      values: []
-    };
+    // Normalize date format (MM/DD/YYYY)
+    const dateObj = new Date(d.date_eff);
+    if (isNaN(dateObj)) return; // skip bad date
+    const dateKey = `${dateObj.getMonth() + 1}/${dateObj.getDate()}/${dateObj.getFullYear()}`;
+
+    const key = `${(d.exporter || 'Unknown').trim()}_${dateKey}`;
+    if (!grouped[key]) {
+      grouped[key] = {
+        exporter: d.exporter || "Unknown",
+        date: dateKey,
+        tariffs: [],
+        weightedTariffs: [],
+        values: []
+      };
+    }
     grouped[key].tariffs.push(d.applied_tariff);
     grouped[key].weightedTariffs.push(d.applied_tariff * d.imports_value_usd);
     grouped[key].values.push(d.imports_value_usd);
   });
 
+  // --- Compute summary rows ---
   const summaryRows = Object.values(grouped).map(g => {
     const simpleAvg = g.tariffs.reduce((a, b) => a + b, 0) / g.tariffs.length;
     const totalTrade = g.values.reduce((a, b) => a + b, 0);
     const tradeWeighted = g.weightedTariffs.reduce((a, b) => a + b, 0) / (totalTrade || 1);
+
     return {
       partner: g.exporter,
       date: g.date,
@@ -255,6 +266,12 @@ function updateSummary(data) {
     };
   });
 
+  if (summaryRows.length === 0) {
+    tbody.innerHTML = "<tr><td colspan='7'>No summarized data found</td></tr>";
+    return;
+  }
+
+  // --- Render table ---
   tbody.innerHTML = summaryRows.map(r => `
     <tr>
       <td>${r.partner}</td>
@@ -268,9 +285,8 @@ function updateSummary(data) {
   `).join("");
 
   if ($.fn.DataTable.isDataTable("#summaryTable")) {
-    $("#summaryTable").DataTable().clear().destroy();
+    $("#summaryTable").DataTable().destroy();
   }
-
   $("#summaryTable").DataTable({
     pageLength: 5,
     order: [[1, "asc"]],
@@ -282,6 +298,7 @@ document.getElementById("applyFilters").addEventListener("click", applyFilters);
 
 // === INITIALIZE ===
 loadCSV();
+
 
 
 
