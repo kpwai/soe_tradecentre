@@ -215,10 +215,11 @@ function updateSummary(data) {
   // Filter for exporter
   let filteredData = data;
   if (exporter && exporter.toLowerCase() !== "world") {
-    filteredData = data.filter(d => d.exporter.trim().toLowerCase() === exporter.trim().toLowerCase());
+    const expNorm = exporter.trim().toLowerCase();
+    filteredData = data.filter(d => (d.exporter || "").trim().toLowerCase() === expNorm);
   }
 
-  if (filteredData.length === 0) {
+  if (!filteredData || filteredData.length === 0) {
     tbody.innerHTML = "<tr><td colspan='7'>No matching data for this selection</td></tr>";
     return;
   }
@@ -281,6 +282,7 @@ document.getElementById("applyFilters").addEventListener("click", applyFilters);
 
 // === INITIALIZE ===
 loadCSV();
+
 
 
 
