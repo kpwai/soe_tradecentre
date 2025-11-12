@@ -181,7 +181,7 @@ function drawChart(data, isAggregated = false) {
 
   const layout = {
     title: isAggregated
-      ? "Monthly Average Tariff" // & Total Import Value
+      ? "Monthly Average Tariff" 
       : "Applied Tariff Over Time", //& Import Value
     xaxis: { title: isAggregated ? "Month" : "Date" },
     yaxis: { title: "Applied Tariff (%)", side: "left" },
@@ -281,6 +281,7 @@ document.getElementById("applyFilters").addEventListener("click", applyFilters);
 
 // === INITIALIZE ===
 loadCSV();
+
 
 
 
