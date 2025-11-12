@@ -8,6 +8,15 @@ const dataPath = "data/tariff_data.csv";  // Path to your CSV file
 // === GLOBAL VARIABLES ===
 let tariffData = [];
 
+// === DATE PARSER (handles month/day/year like "2/4/25") ===
+function parseMDY(dateStr) {
+  if (!dateStr) return null;
+  const parts = dateStr.split(/[\/\-]/); // Handles "2/4/25" or "02-04-25"
+  let [month, day, year] = parts.map(p => parseInt(p, 10));
+  if (year < 100) year += 2000; // Convert "25" → 2025
+  return new Date(year, month - 1, day); // JS month is 0-based
+}
+
 // === LOAD CSV ===
 async function loadCSV() {
   try {
@@ -25,7 +34,7 @@ async function loadCSV() {
       importer: row.importer?.trim() || "",
       exporter: row.exporter?.trim() || "",
       product: row.product?.trim() || "",
-      date_eff: new Date(row.date_eff),  // expects month/day/year format
+      date_eff: parseMDY(row.date_eff), // ✅ Correctly parsed as month/day/year
       applied_tariff: parseFloat(row.applied_tariff || 0),
       imports_value_usd: parseFloat(row.imports_value_usd || 0),
     }));
@@ -40,12 +49,12 @@ async function loadCSV() {
     document.getElementById("dateFrom").valueAsDate = past6Months;
     document.getElementById("dateTo").valueAsDate = today;
 
-    applyFilters();  // Automatically show last 6 months of data
+    applyFilters(); // Automatically show last 6 months of data
 
   } catch (error) {
     console.error("Error loading CSV:", error);
     document.getElementById("tariffChart").innerHTML =
-      "<p style='color:red'> Failed to load tariff data. Please check the CSV link or your internet connection.</p>";
+      "<p style='color:red'>⚠️ Failed to load tariff data. Please check the CSV link or your internet connection.</p>";
   }
 }
 
@@ -186,7 +195,6 @@ function drawChart(data, isAggregated = false) {
     paper_bgcolor: "#fff"
   };
 
-  /*Plotly.newPlot("tariffChart", [trace1, trace2], layout);*/
   Plotly.newPlot("tariffChart", [trace1, trace2], layout);
 }
 
@@ -206,21 +214,19 @@ function updateSummary(data) {
   const product  = document.getElementById("productSelect").value || "All products";
 
   const exporterLabel = exporter === "" ? "World" : exporter;
-  summaryTitle.textContent = `${importer} imports from ${exporterLabel} - ${product}`;
+  summaryTitle.textContent = `${importer} imports from ${exporterLabel} — ${product}`;
 
-  // Normalize exporter filter (handle case differences and trim)
+  // Filter for exporter
   let filteredData = data;
   if (exporter && exporter.toLowerCase() !== "world") {
     filteredData = data.filter(d => d.exporter.trim().toLowerCase() === exporter.trim().toLowerCase());
   }
 
-  // If no filtered data found, show message
   if (filteredData.length === 0) {
     tbody.innerHTML = "<tr><td colspan='7'>No matching data for this selection</td></tr>";
     return;
   }
 
-  // Group data by exporter and date (consistent MM/DD/YYYY)
   const grouped = {};
   filteredData.forEach(d => {
     const dateKey = d.date_eff.toLocaleDateString("en-US", { month: "2-digit", day: "2-digit", year: "numeric" });
@@ -237,7 +243,6 @@ function updateSummary(data) {
     grouped[key].values.push(d.imports_value_usd);
   });
 
-  // Calculate averages
   const summaryRows = Object.values(grouped).map(g => {
     const simpleAvg = g.tariffs.reduce((a, b) => a + b, 0) / g.tariffs.length;
     const totalTrade = g.values.reduce((a, b) => a + b, 0);
@@ -280,8 +285,3 @@ document.getElementById("applyFilters").addEventListener("click", applyFilters);
 
 // === INITIALIZE ===
 loadCSV();
-
-
-
-
-
