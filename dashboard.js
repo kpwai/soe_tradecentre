@@ -169,7 +169,7 @@ function drawChart(data, isAggregated = false) {
     line: { width: 3, color: "#003366" }
   };
   
-  const trace2 = {
+  /*const trace2 = {
     x: data.map(d => d.date_eff),
     y: data.map(d => d.imports_value_usd),
     mode: "lines+markers",
@@ -177,25 +177,21 @@ function drawChart(data, isAggregated = false) {
     yaxis: "y2",
     marker: { size: 6 },
     line: { width: 2, dash: "dot", color: "#ff9900" }
-  };
+  };*/
 
   const layout = {
     title: isAggregated
       ? "Monthly Average Tariff & Total Import Value"
-      : "Applied Tariff & Import Value Over Time",
+      : "Applied Tariff Over Time", //& Import Value
     xaxis: { title: isAggregated ? "Month" : "Date" },
     yaxis: { title: "Applied Tariff (%)", side: "left" },
-    yaxis2: {
-      title: "Import Value (USD)",
-      overlaying: "y",
-      side: "right"
-    },
+    //yaxis2: { title: "Import Value (USD)", overlaying: "y", side: "right"},
     legend: { orientation: "h", x: 0.25, y: -0.2 },
     plot_bgcolor: "#fff",
     paper_bgcolor: "#fff"
   };
-
-  Plotly.newPlot("tariffChart", [trace1, trace2], layout);
+  Plotly.newPlot("tariffChart", [trace1], layout);
+  //Plotly.newPlot("tariffChart", [trace1, trace2], layout);
 }
 
 // === SUMMARY TABLE ===
@@ -285,3 +281,4 @@ document.getElementById("applyFilters").addEventListener("click", applyFilters);
 
 // === INITIALIZE ===
 loadCSV();
+
