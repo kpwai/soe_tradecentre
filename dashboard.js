@@ -298,11 +298,3 @@ document.getElementById("applyFilters").addEventListener("click", applyFilters);
 
 // === INITIALIZE ===
 loadCSV();
-
-
-
-
-
-
-
-
