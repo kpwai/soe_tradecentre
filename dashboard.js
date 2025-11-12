@@ -34,7 +34,7 @@ async function loadCSV() {
       importer: row.importer?.trim() || "",
       exporter: row.exporter?.trim() || "",
       product: row.product?.trim() || "",
-      date_eff: parseMDY(row.date_eff), // ✅ Correctly parsed as month/day/year
+      date_eff: parseMDY(row.date_eff), // Correctly parsed as month/day/year
       applied_tariff: parseFloat(row.applied_tariff || 0),
       imports_value_usd: parseFloat(row.imports_value_usd || 0),
     }));
@@ -54,7 +54,7 @@ async function loadCSV() {
   } catch (error) {
     console.error("Error loading CSV:", error);
     document.getElementById("tariffChart").innerHTML =
-      "<p style='color:red'>⚠️ Failed to load tariff data. Please check the CSV link or your internet connection.</p>";
+      "<p style='color:red'> Failed to load tariff data. Please check the CSV link or your internet connection.</p>";
   }
 }
 
@@ -181,7 +181,7 @@ function drawChart(data, isAggregated = false) {
 
   const layout = {
     title: isAggregated
-      ? "Monthly Average Tariff" // & Total Import Value"
+      ? "Monthly Average Tariff" // & Total Import Value
       : "Applied Tariff Over Time", //& Import Value
     xaxis: { title: isAggregated ? "Month" : "Date" },
     yaxis: { title: "Applied Tariff (%)", side: "left" },
@@ -281,5 +281,6 @@ document.getElementById("applyFilters").addEventListener("click", applyFilters);
 
 // === INITIALIZE ===
 loadCSV();
+
 
 
