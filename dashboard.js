@@ -266,7 +266,7 @@ $("#summaryTable").DataTable({
     pageLength: 5,
     order: [[1, "asc"]],
 });
-
+}
 // ========================================================
 // EVENT LISTENER
 // ========================================================
@@ -276,6 +276,7 @@ document.getElementById("applyFilters").addEventListener("click", () => applyFil
 // INITIALIZE DASHBOARD
 // ========================================================
 loadCSV();
+
 
 
 
