@@ -229,8 +229,8 @@ function updateSummary(data) {
         "<td>" + simpleAvg.toFixed(3) + "</td>" +
         "<td>" + tradeWeighted.toFixed(3) + "</td>" +
         "<td>" + totalTrade.toFixed(3) + "</td>" +
-        "<td>100%</td>" +
-        "<td>100%</td>" +
+        "<td></td>" +
+        "<td></td>" +
       "</tr>";
   }
 
@@ -255,7 +255,7 @@ if ($.fn.DataTable.isDataTable("#summaryTable")) {
   );
 }
 
-// ❗ RE-SELECT NEW TBODY AFTER REPLACING TABLE
+// RE-SELECT NEW TBODY AFTER REPLACING TABLE
 var tbody = document.querySelector("#summaryTable tbody");
 
 // Insert rows into the *new* tbody
@@ -276,4 +276,5 @@ document.getElementById("applyFilters").addEventListener("click", () => applyFil
 // INITIALIZE DASHBOARD
 // ========================================================
 loadCSV();
+
 
