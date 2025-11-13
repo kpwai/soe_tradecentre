@@ -3,7 +3,7 @@
 // ========================================================
 
 // === CONFIGURATION ===
-const dataPath = "data/tariff_data.csv"; // Path to your CSV file
+const dataPath = "data/tariff_data.csv";
 
 // === GLOBAL DATA STORAGE ===
 let tariffData = [];
@@ -249,3 +249,4 @@ document.getElementById("applyFilters").addEventListener("click", () => applyFil
 // INITIALIZE DASHBOARD
 // ========================================================
 loadCSV();
+
