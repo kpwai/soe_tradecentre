@@ -108,7 +108,7 @@ function applyFilters(isInitial = false) {
 // ========================================================
 // BUILD TREND CHART
 // ========================================================
-function drawChart(data, exporter, product) {
+/*function drawChart(data, exporter, product) {
   if (!data || data.length === 0) {
     Plotly.newPlot("tariffChart", [], { title: "No data available" });
     return;
@@ -194,8 +194,104 @@ function drawChart(data, exporter, product) {
   };
 
   Plotly.newPlot("tariffChart", [trace], layout);
-}
+}*/
+function drawChart(data, exporter, product) {
+  if (!data || data.length === 0) {
+    Plotly.newPlot("tariffChart", [], { title: "No data available" });
+    return;
+  }
 
+  // ---- CASE A: WORLD + ALL PRODUCTS → aggregate per date ----
+  const isWorldAll =
+    (exporter === "" || exporter === "World") &&
+    (product === "" || product === "All");
+
+  let trendData = [];
+
+  if (isWorldAll) {
+    const grouped = {};
+
+    data.forEach(d => {
+      const key = d.date_eff.toLocaleDateString("en-US");
+      if (!grouped[key]) grouped[key] = [];
+      grouped[key].push(d.applied_tariff);
+    });
+
+    Object.keys(grouped).forEach(key => {
+      const arr = grouped[key];
+      const avg = arr.reduce((a, b) => a + b, 0) / arr.length;
+
+      trendData.push({
+        date_eff: new Date(key),
+        applied_tariff: avg,
+      });
+    });
+  }
+  else {
+    trendData = data.map(d => ({
+      date_eff: d.date_eff,
+      applied_tariff: d.applied_tariff,
+    }));
+  }
+
+  // ---- Sort ----
+  trendData.sort((a, b) => a.date_eff - b.date_eff);
+
+  // ---- Keep change points only ----
+  const trendDates = [];
+  const trendValues = [];
+
+  let last = null;
+
+  trendData.forEach(d => {
+    if (d.applied_tariff !== last) {
+      trendDates.push(d.date_eff);
+      trendValues.push(d.applied_tariff);
+      last = d.applied_tariff;
+    }
+  });
+
+  // ---- Step Line ----
+  const stepTrace = {
+    x: trendDates,
+    y: trendValues,
+    mode: "lines",
+    line: {
+      shape: "hv",
+      width: 3,
+      color: "#003366",
+    },
+    name: "Tariff Trend",
+  };
+
+  // ---- Dots on change points ----
+  const dotTrace = {
+    x: trendDates,
+    y: trendValues,
+    mode: "markers",
+    marker: {
+      size: 8,
+      color: "#003366",
+    },
+    showlegend: false,
+    hoverinfo: "skip"
+  };
+
+  // ---- Layout ----
+  const layout = {
+    title: isWorldAll
+      ? "Global Tariff Trend (World — All Products)"
+      : "Applied Tariff Trend (Change Points)",
+    xaxis: { title: "Date" },
+    yaxis: { title: "Tariff (%)" },
+    font: { family: "Georgia, serif", size: 14 },
+    showlegend: false,
+    plot_bgcolor: "#fff",
+    paper_bgcolor: "#fff",
+  };
+
+  Plotly.newPlot("tariffChart", [stepTrace, dotTrace], layout);
+}
 // ========================================================
 // SUMMARY TABLE
 // ========================================================
@@ -275,3 +371,4 @@ document.getElementById("applyFilters").addEventListener("click", () => applyFil
 // INITIALIZE DASHBOARD
 // ========================================================
 loadCSV();
+
