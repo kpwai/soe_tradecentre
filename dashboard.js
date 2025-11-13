@@ -127,37 +127,58 @@ function applyFilters(isInitial = false) {
 }
 
 // ========================================================
-// WTO-STYLE STEP CHART
+// DRAE CHART
 // ========================================================
-function drawStepChart(data) {
-  if (data.length === 0) {
+function drawChart(data) {
+  if (!data || data.length === 0) {
     Plotly.newPlot("tariffChart", [], { title: "No data available" });
     return;
   }
 
-  // Step-like chart: WTO visual effect
-  const trace1 = {
-    x: data.map(d => d.date_eff),
-    y: data.map(d => d.applied_tariff),
-    mode: "lines+markers",
-    name: "Applied Tariff (%)",
-    line: { shape: "hv", width: 3, color: "#003366" },  // step effect
-    marker: { size: 7 }
+  // Sort by date
+  data.sort((a, b) => a.date_eff - b.date_eff);
+
+  // Build step-trend: keep only points where tariff *changes*
+  const trendDates = [];
+  const trendValues = [];
+
+  let lastTariff = null;
+
+  data.forEach(d => {
+    if (d.applied_tariff !== lastTariff) {
+      // Add change point
+      trendDates.push(d.date_eff);
+      trendValues.push(d.applied_tariff);
+      lastTariff = d.applied_tariff;
+    }
+  });
+
+  const trace = {
+    x: trendDates,
+    y: trendValues,
+    mode: "lines",
+    line: {
+      shape: "hv",       // <-- horizontal-vertical step curve (WTO style)
+      width: 3,
+      color: "#003366"
+    },
+    name: "Applied Tariff Trend"
   };
 
   const layout = {
-    title: "Applied Tariff Over Time (Daily Change Points)",
+    title: "Tariff Trend (Change Points Only)",
     xaxis: { title: "Date" },
     yaxis: { title: "Applied Tariff (%)" },
     plot_bgcolor: "#fff",
-    paper_bgcolor: "#fff"
+    paper_bgcolor: "#fff",
+    showlegend: false
   };
 
-  Plotly.newPlot("tariffChart", [trace1], layout);
+  Plotly.newPlot("tariffChart", [trace], layout);
 }
 
 // ========================================================
-// SUMMARY TABLE (DAILY LIKE WTO)
+// SUMMARY TABLE
 // ========================================================
 function updateSummary(data) {
   const tbody = document.querySelector("#summaryTable tbody");
@@ -255,3 +276,4 @@ document.getElementById("applyFilters").addEventListener("click", () => {
 // INIT
 // ========================================================
 loadCSV();
+
