@@ -37,7 +37,7 @@ async function loadCSV() {
     // === Default view: last 6 months ===
     const today = new Date();
     const past6Months = new Date();
-    past6Months.setMonth(today.getMonth() - 6);
+    past10Months.setMonth(today.getMonth() - 10);
     document.getElementById("dateFrom").valueAsDate = past6Months;
     document.getElementById("dateTo").valueAsDate = today;
 
@@ -279,3 +279,4 @@ document.getElementById("applyFilters").addEventListener("click", applyFilters);
 
 // === INITIALIZE ===
 loadCSV();
+
