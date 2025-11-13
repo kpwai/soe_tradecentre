@@ -45,7 +45,7 @@
       color: #003366;
     }
 
-    /* Content Container */
+    /* Container */
     .container {
       max-width: 1100px;
       margin: 2rem auto;
@@ -59,73 +59,57 @@
       color: #003366;
     }
 
-    /* Dashboard Controls Section */
+    /* === FILTER CONTROLS === */
     #controls {
       width: 100%;
-      margin-bottom: 2rem;
+      margin-bottom: 1.8rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
     }
 
-    /* FIRST ROW: Importer / Exporter / Product */
-    .control-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      column-gap: 1rem;
-      align-items: center;
-      margin-bottom: 1rem;
-    }
-
-    .control-row label {
-      font-weight: bold;
-      margin-bottom: 0.3rem;
-      display: block;
-    }
-
-    .control-row select {
-      width: 100%;
-      max-height: 150px;
-      overflow-y: auto;
-      padding: 0.45rem;
-      font-family: Georgia, serif;
-      font-size: 1rem;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-
-    /* SECOND ROW: Date From / To / Apply Button */
+    /* First row: Importer, Exporter, Product */
+    .control-row,
     .date-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr auto;
-      column-gap: 1rem;
-      align-items: center;
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      justify-content: flex-start;
+      gap: 2rem;
     }
 
-    .date-row label {
-      font-weight: bold;
-      margin-bottom: 0.3rem;
-      display: block;
+    .control-block {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
     }
 
-    .date-row input[type="date"] {
-      width: 150px;
+    /* Uniform input sizes */
+    .control-block select,
+    .control-block input[type="date"],
+    #applyFilters {
+      width: 180px;
       padding: 0.4rem 0.6rem;
-      border-radius: 4px;
       border: 1px solid #ccc;
-      font-size: 1rem;
+      border-radius: 4px;
       font-family: Georgia, serif;
     }
 
-    /* Apply Filters Button */
+    .control-block label {
+      font-weight: bold;
+      margin-bottom: 0.25rem;
+    }
+
+    /* Button */
     button {
-      padding: 0.6rem 1.2rem;
+      padding: 0.5rem 1rem;
       background-color: #003366;
       color: white;
-      border: none;
-      border-radius: 5px;
-      font-family: Georgia, serif;
       font-weight: bold;
+      font-family: Georgia, serif;
+      border: none;
+      border-radius: 4px;
       cursor: pointer;
-      height: 42px;
-      margin-top: 1.3rem;
     }
 
     button:hover {
@@ -133,12 +117,13 @@
       color: #003366;
     }
 
-    /* Summary Table */
+    /* Tables */
     table.dataTable {
       width: 100%;
-      border-collapse: collapse;
+      background: #fff;
       font-size: 0.95rem;
       font-family: Georgia, serif;
+      border-collapse: collapse;
     }
 
     table.dataTable thead {
@@ -146,10 +131,11 @@
       color: white;
     }
 
-    table.dataTable th, table.dataTable td {
+    table.dataTable th,
+    table.dataTable td {
       padding: 0.6rem;
-      border: 1px solid #ddd;
       text-align: center;
+      border: 1px solid #ddd;
     }
 
     #summary {
@@ -166,14 +152,18 @@
       margin-bottom: 0.6rem;
     }
 
+    footer {
+      margin-top: 3rem;
+      padding: 1rem;
+      background-color: #003366;
+      color: white;
+      text-align: center;
+    }
+
     @media (max-width: 768px) {
       .control-row,
       .date-row {
-        grid-template-columns: 1fr;
-      }
-
-      button {
-        width: 100%;
+        flex-direction: column;
       }
     }
   </style>
@@ -184,7 +174,7 @@
 </head>
 <body>
 
-<!-- Top Navigation -->
+<!-- === NAVIGATION === -->
 <nav>
   <a href="index.html">Home</a>
   <a href="about.html">About</a>
@@ -200,48 +190,55 @@
   <h1>Trade Model (CP) Equilibrium Dashboard</h1>
   <h2>Tariff Actions</h2>
 
-  <!-- FILTER CONTROL AREA -->
+  <!-- === FILTER CONTROL AREA === -->
   <div id="controls">
 
-    <!-- ROW 1 -->
+    <!-- ROW 1: Importer / Exporter / Product -->
     <div class="control-row">
-      <div>
+
+      <div class="control-block">
         <label>Importer:</label>
         <select id="importerSelect"></select>
       </div>
 
-      <div>
+      <div class="control-block">
         <label>Exporter:</label>
         <select id="exporterSelect"></select>
       </div>
 
-      <div>
+      <div class="control-block">
         <label>Product Code:</label>
         <select id="productSelect"></select>
       </div>
+
     </div>
 
-    <!-- ROW 2 -->
+    <!-- ROW 2: From / To / Apply Filters -->
     <div class="date-row">
-      <div>
+
+      <div class="control-block">
         <label>From:</label>
         <input type="date" id="dateFrom">
       </div>
 
-      <div>
+      <div class="control-block">
         <label>To:</label>
         <input type="date" id="dateTo">
       </div>
 
-      <button id="applyFilters">Apply Filters</button>
+      <div class="control-block">
+        <label>&nbsp;</label>
+        <button id="applyFilters">Apply Filters</button>
+      </div>
+
     </div>
 
   </div>
 
-  <!-- CHART DISPLAY -->
+  <!-- === CHART === -->
   <div id="tariffChart" style="margin-top:2rem;"></div>
 
-  <!-- SUMMARY TABLE -->
+  <!-- === SUMMARY TABLE === -->
   <section id="summary">
     <h3>Details</h3>
     <p id="summary-title"></p>
@@ -261,7 +258,6 @@
       <tbody></tbody>
     </table>
   </section>
-
 </div>
 
 <footer>
