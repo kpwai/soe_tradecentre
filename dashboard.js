@@ -249,7 +249,7 @@ function drawChart(data, exporter, product) {
     },
     yaxis: { title: "Tariff (%)" },
     font: { family: "Georgia, serif", size: 14 },
-    showlegend: true,
+    showlegend: false,
     plot_bgcolor: "#fff",
     paper_bgcolor: "#fff"
   };
@@ -336,6 +336,7 @@ document.getElementById("applyFilters").addEventListener("click", () => applyFil
 // INITIALIZE DASHBOARD
 // ========================================================
 loadCSV();
+
 
 
 
