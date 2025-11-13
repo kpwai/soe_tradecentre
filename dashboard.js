@@ -174,8 +174,8 @@ function drawChart(data, exporter, product) {
 // SUMMARY TABLE
 // ========================================================
 function updateSummary(data) {
-  const tbody = document.querySelector("#summaryTable tbody");
-  const summaryTitle = document.getElementById("summary-title");
+  var tbody = document.querySelector("#summaryTable tbody");
+  var summaryTitle = document.getElementById("summary-title");
 
   if (!data || data.length === 0) {
     tbody.innerHTML = "<tr><td colspan='7'>No data available</td></tr>";
@@ -183,17 +183,18 @@ function updateSummary(data) {
     return;
   }
 
-  const importer = "United States";
-  const exporter = document.getElementById("exporterSelect").value || "World";
-  const product = document.getElementById("productSelect").value || "All products";
+  var importer = "United States";
+  var exporter = document.getElementById("exporterSelect").value || "World";
+  var product = document.getElementById("productSelect").value || "All products";
 
-  summaryTitle.textContent = `${importer} imports from ${exporter} — ${product}`;
+  summaryTitle.textContent = importer + " imports from " + exporter + " — " + product;
 
-  const grouped = {};
+  var grouped = {};
 
-  data.forEach(d => {
-    const dateKey = d.date_eff.toLocaleDateString("en-US");
-    const key = `${d.exporter}_${dateKey}`;
+  for (var i = 0; i < data.length; i++) {
+    var d = data[i];
+    var dateKey = d.date_eff.toLocaleDateString("en-US");
+    var key = d.exporter + "_" + dateKey;
 
     if (!grouped[key]) {
       grouped[key] = {
@@ -208,34 +209,59 @@ function updateSummary(data) {
     grouped[key].tariffs.push(d.applied_tariff);
     grouped[key].weightedTariffs.push(d.applied_tariff * d.imports_value_usd);
     grouped[key].values.push(d.imports_value_usd);
-  });
-
-  const rows = Object.values(grouped).map(g => {
-    const simpleAvg = g.tariffs.reduce((a,b)=>a+b,0) / g.tariffs.length;
-    const totalTrade = g.values.reduce((a,b)=>a+b,0);
-    const tradeWeighted = g.weightedTariffs.reduce((a,b)=>a+b,0) / (totalTrade || 1);
-
-    return `
-      <tr>
-        <td>${g.exporter}</td>
-        <td>${g.date}</td>
-        <td>${simpleAvg.toFixed(3)}</td>
-        <td>${tradeWeighted.toFixed(3)}</td>
-        <td>${totalTrade.toFixed(3)}</td>
-        <td>100%</td>
-        <td>100%</td>
-      </tr>
-    `;
-  });
-  tbody.innerHTML = rows.join("");
-
-  if ($.fn.DataTable.isDataTable("#summaryTable")) {
-    $("#summaryTable").DataTable().clear().destroy();
   }
 
+  // Build table rows using STRING CONCATENATION only
+  var htmlRows = "";
+  var groups = Object.values(grouped);
+
+  for (var j = 0; j < groups.length; j++) {
+    var g = groups[j];
+
+    var simpleAvg = g.tariffs.reduce(function(a, b){ return a + b; }, 0) / g.tariffs.length;
+    var totalTrade = g.values.reduce(function(a, b){ return a + b; }, 0);
+    var tradeWeighted = g.weightedTariffs.reduce(function(a, b){ return a + b; }, 0) / (totalTrade || 1);
+
+    htmlRows +=
+      "<tr>" +
+        "<td>" + g.exporter + "</td>" +
+        "<td>" + g.date + "</td>" +
+        "<td>" + simpleAvg.toFixed(3) + "</td>" +
+        "<td>" + tradeWeighted.toFixed(3) + "</td>" +
+        "<td>" + totalTrade.toFixed(3) + "</td>" +
+        "<td>100%</td>" +
+        "<td>100%</td>" +
+      "</tr>";
+  }
+
+  // REBUILD DATATABLE
+  if ($.fn.DataTable.isDataTable("#summaryTable")) {
+    $('#summaryTable').DataTable().destroy();
+    $('#summaryTable').empty();
+
+    $('#summaryTable').html(
+      "<thead>" +
+        "<tr>" +
+          "<th>Partner</th>" +
+          "<th>Date (MM/DD/YYYY)</th>" +
+          "<th>Simple Avg Tariff</th>" +
+          "<th>Weighted Avg Tariff</th>" +
+          "<th>Affected Trade (USD)</th>" +
+          "<th>Affected Trade Share</th>" +
+          "<th>Affected Tariff Line Share</th>" +
+        "</tr>" +
+      "</thead>" +
+      "<tbody></tbody>"
+    );
+  }
+
+  // Insert rows
+  tbody.innerHTML = htmlRows;
+
+  // Initialize DataTable again
   $("#summaryTable").DataTable({
     pageLength: 5,
-    order: [[1, "asc"]],
+    order: [[1, "asc"]]
   });
 }
 // ========================================================
@@ -247,6 +273,7 @@ document.getElementById("applyFilters").addEventListener("click", () => applyFil
 // INITIALIZE DASHBOARD
 // ========================================================
 loadCSV();
+
 
 
 
