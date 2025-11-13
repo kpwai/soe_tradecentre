@@ -235,34 +235,37 @@ function updateSummary(data) {
   }
 
   // REBUILD DATATABLE
-  if ($.fn.DataTable.isDataTable("#summaryTable")) {
-    $('#summaryTable').DataTable().destroy();
-    $('#summaryTable').empty();
+if ($.fn.DataTable.isDataTable("#summaryTable")) {
+  $('#summaryTable').DataTable().destroy();
+  $('#summaryTable').empty();
 
-    $('#summaryTable').html(
-      "<thead>" +
-        "<tr>" +
-          "<th>Partner</th>" +
-          "<th>Date (MM/DD/YYYY)</th>" +
-          "<th>Simple Avg Tariff</th>" +
-          "<th>Weighted Avg Tariff</th>" +
-          "<th>Affected Trade (USD)</th>" +
-          "<th>Affected Trade Share</th>" +
-          "<th>Affected Tariff Line Share</th>" +
-        "</tr>" +
-      "</thead>" +
-      "<tbody></tbody>"
-    );
-  }
+  $('#summaryTable').html(
+    "<thead>" +
+      "<tr>" +
+        "<th>Partner</th>" +
+        "<th>Date (MM/DD/YYYY)</th>" +
+        "<th>Simple Avg Tariff</th>" +
+        "<th>Weighted Avg Tariff</th>" +
+        "<th>Affected Trade (USD)</th>" +
+        "<th>Affected Trade Share</th>" +
+        "<th>Affected Tariff Line Share</th>" +
+      "</tr>" +
+    "</thead>" +
+    "<tbody></tbody>"
+  );
+}
 
-  // Insert rows
-  tbody.innerHTML = htmlRows;
+// ❗ RE-SELECT NEW TBODY AFTER REPLACING TABLE
+var tbody = document.querySelector("#summaryTable tbody");
 
-  // Initialize DataTable again
-  $("#summaryTable").DataTable({
-    pageLength: 5,
-    order: [[1, "asc"]]
-  });
+// Insert rows into the *new* tbody
+tbody.innerHTML = htmlRows;
+
+// Initialize DataTable again
+$("#summaryTable").DataTable({
+  pageLength: 5,
+  order: [[1, "asc"]]
+});
 }
 // ========================================================
 // EVENT LISTENER
@@ -273,3 +276,4 @@ document.getElementById("applyFilters").addEventListener("click", () => applyFil
 // INITIALIZE DASHBOARD
 // ========================================================
 loadCSV();
+
