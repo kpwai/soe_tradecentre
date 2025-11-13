@@ -154,7 +154,7 @@ function drawChart(data, exporter, product) {
 
   // ---- STEP 4: Use category axis to preserve EXACT dates ----
   const layout = {
-    title: "Tariff Trend (Aggregated by Change Dates)",
+    title: "Tariff Trend",
     xaxis: {
       title: "Date",
       type: "category",     // <-- THIS is the key
@@ -249,4 +249,5 @@ document.getElementById("applyFilters").addEventListener("click", () => applyFil
 // INITIALIZE DASHBOARD
 // ========================================================
 loadCSV();
+
 
