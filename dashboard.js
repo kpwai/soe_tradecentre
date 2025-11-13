@@ -171,7 +171,12 @@ function drawChart(data) {
     yaxis: { title: "Applied Tariff (%)" },
     plot_bgcolor: "#fff",
     paper_bgcolor: "#fff",
-    showlegend: false
+    showlegend: true,
+    font: {
+    family: "Georgia, serif", 
+    size: 14,
+    color: "#333"
+  }
   };
 
   Plotly.newPlot("tariffChart", [trace], layout);
@@ -276,4 +281,5 @@ document.getElementById("applyFilters").addEventListener("click", () => {
 // INIT
 // ========================================================
 loadCSV();
+
 
