@@ -184,7 +184,7 @@ function updateSummary(data) {
   }
 
   const importer = document.getElementById("importerSelect").value || "United States";
-  const exporter = document.getElementById("exporterSelect").value || "World";
+  const exporter = document.getElementById("exporterSelect").value || "";
   const product  = document.getElementById("productSelect").value || "All products";
 
   const exporterLabel = exporter === "" ? "World" : exporter;
@@ -280,6 +280,7 @@ document.getElementById("applyFilters").addEventListener("click", () => applyFil
 // INITIALIZE DASHBOARD
 // ========================================================
 loadCSV();
+
 
 
 
