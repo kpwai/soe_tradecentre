@@ -3,11 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>News | SMU Centre for Research on International Trade</title>
+  <title>Trade Model (CP) Equilibrium Dashboard | SMU CRIT</title>
 
   <!-- === Global Page Styles === -->
   <style>
-    /* Base */
     html, body {
       font-family: Georgia, serif;
       background-color: #f8f9fa;
@@ -46,7 +45,7 @@
       color: #003366;
     }
 
-    /* Layout Container */
+    /* Content Container */
     .container {
       max-width: 1100px;
       margin: 2rem auto;
@@ -58,54 +57,57 @@
 
     h1, h2, h3 {
       color: #003366;
-      font-family: Georgia, serif;
-    }
-
-    h1 {
-      margin-top: 0;
-      border-bottom: 2px solid #003366;
-      padding-bottom: 0.5rem;
-    }
-
-    p, label, select, button {
-      font-family: Georgia, serif;
-      font-size: 1rem;
     }
 
     /* Dashboard Controls */
     #controls {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
+      width: 100%;
+      margin-bottom: 1.8rem;
     }
 
+    /* FIRST ROW */
     .control-row {
       display: flex;
-      flex-wrap: wrap;
       align-items: center;
+      flex-wrap: wrap;
       gap: 1rem;
+      margin-bottom: 1rem;
     }
 
-    #controls label {
-      font-weight: bold;
-      color: #003366;
-    }
-
-    select, button, input[type="date"] {
+    /* Dropdown scrollbars */
+    select {
+      max-height: 140px;
+      overflow-y: auto;
       padding: 0.4rem 0.6rem;
       border: 1px solid #ccc;
       border-radius: 4px;
-      font-family: Georgia, serif;
       font-size: 1rem;
     }
 
+    /* Date row */
+    .date-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    input[type="date"] {
+      padding: 0.4rem 0.6rem;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+
+    /* Button */
     button {
+      padding: 0.5rem 1rem;
       background-color: #003366;
       color: white;
       font-weight: bold;
+      border: none;
+      border-radius: 4px;
       cursor: pointer;
-      transition: background-color 0.3s;
     }
 
     button:hover {
@@ -113,30 +115,12 @@
       color: #003366;
     }
 
-    /* === Scrollable Dropdowns for Exporter and Product === */
-    #exporterSelect,
-    #productSelect {
-      max-height: 200px;
-      overflow-y: auto;
-      display: block;
-      width: 250px;
-      background-color: #fff;
-      color: #333;
-    }
-
-    #exporterSelect:focus,
-    #productSelect:focus {
-      border-color: #003366;
-      outline: none;
-      box-shadow: 0 0 5px rgba(0, 51, 102, 0.4);
-    }
-
     /* Tables */
     table.dataTable {
-      border-collapse: collapse;
       width: 100%;
       background: #fff;
       font-size: 0.95rem;
+      border-collapse: collapse;
     }
 
     table.dataTable thead {
@@ -144,45 +128,36 @@
       color: white;
     }
 
-    table.dataTable th,
-    table.dataTable td {
+    table.dataTable th, table.dataTable td {
       padding: 0.6rem;
       text-align: center;
       border: 1px solid #ddd;
     }
 
     #summary {
-      margin-top: 2rem;
       background: #f8f9fa;
       padding: 1rem;
       border-radius: 6px;
       border: 1px solid #ddd;
-    }
-
-    #summary h3 {
-      margin-top: 0;
+      margin-top: 2rem;
     }
 
     #summary-title {
       font-style: italic;
       color: #444;
-      margin-bottom: 0.5rem;
-    }
-
-    #tariffChart {
-      margin: 2rem 0;
     }
 
     footer {
-      text-align: center;
+      margin-top: 3rem;
+      padding: 1rem;
       background-color: #003366;
       color: white;
-      padding: 1rem;
-      margin-top: 3rem;
+      text-align: center;
     }
 
     @media (max-width: 768px) {
-      .control-row {
+      .control-row,
+      .date-row {
         flex-direction: column;
         align-items: flex-start;
       }
@@ -191,11 +166,11 @@
 
   <!-- DataTables CSS -->
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-</head>
 
+</head>
 <body>
 
-<!-- === Navigation === -->
+<!-- NAVIGATION -->
 <nav>
   <a href="index.html">Home</a>
   <a href="about.html">About</a>
@@ -207,77 +182,75 @@
   <a href="contact.html">Contact</a>
 </nav>
 
-<!-- === Page Content === -->
 <div class="container">
   <h1>Trade Model (CP) Equilibrium Dashboard</h1>
+  <h2>Tariff Actions</h2>
 
-  <!-- === Trade Model Dashboard Section === -->
-  <section id="trade-dashboard">
-    <h2>Tariff Actions</h2>
+  <!-- FILTER CONTROL AREA -->
+  <div id="controls">
 
-    <!-- Filter Controls -->
-    <div id="controls">
+    <!-- ROW 1: Importer / Exporter / Product -->
+    <div class="control-row">
+      <label>Importer:</label>
+      <select id="importerSelect"></select>
 
-      <!-- Row 1: Importer, Exporter, Product -->
-      <div class="control-row">
-        <label>Importer:</label>
-        <select id="importerSelect"></select>
+      <label>Exporter:</label>
+      <select id="exporterSelect" size="5"></select>
 
-        <label>Exporter:</label>
-        <select id="exporterSelect"></select>
-
-        <label>Product Code:</label>
-        <select id="productSelect"></select>
-      </div>
-
-      <!-- Row 2: From, To, Apply Filters -->
-      <div class="control-row">
-        <label>From:</label>
-        <input type="date" id="dateFrom">
-
-        <label>To:</label>
-        <input type="date" id="dateTo">
-
-        <button id="applyFilters">Apply Filters</button>
-      </div>
+      <label>Product Code:</label>
+      <select id="productSelect" size="5"></select>
     </div>
 
-    <!-- Chart -->
-    <div id="tariffChart"></div>
+    <!-- ROW 2: Dates + Apply Filters -->
+    <div class="date-row">
+      <label>From:</label>
+      <input type="date" id="dateFrom">
 
-    <!-- Summary Table -->
-    <section id="summary">
-      <h3>Details</h3>
-      <p id="summary-title"></p>
-      <table id="summaryTable" class="display">
-        <thead>
-          <tr>
-            <th>Partner</th>
-            <th>Date (month/day/year)</th>
-            <th>Simple average tariff rate</th>
-            <th>Trade weighted average tariff rate</th>
-            <th>Affected trade value (USD)</th>
-            <th>Affected trade share</th>
-            <th>Affected tariff line share</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </section>
+      <label>To:</label>
+      <input type="date" id="dateTo">
+
+      <button id="applyFilters">Apply Filters</button>
+    </div>
+
+  </div>
+
+  <!-- CHART -->
+  <div id="tariffChart" style="margin-top:2rem;"></div>
+
+  <!-- SUMMARY TABLE -->
+  <section id="summary">
+    <h3>Details</h3>
+    <p id="summary-title"></p>
+
+    <table id="summaryTable" class="display">
+      <thead>
+        <tr>
+          <th>Partner</th>
+          <th>Date (MM/DD/YYYY)</th>
+          <th>Simple Avg Tariff</th>
+          <th>Weighted Avg Tariff</th>
+          <th>Affected Trade (USD)</th>
+          <th>Affected Trade Share</th>
+          <th>Affected Tariff Line Share</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
   </section>
 </div>
 
 <footer>
-  &copy; 2026 SMU Centre for Research on International Trade
+  © 2026 SMU Centre for Research on International Trade
 </footer>
 
-<!-- === Dependencies === -->
+<!-- Dependencies -->
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
-<!-- Dashboard Script --> 
+<!-- Dashboard Script -->
 <script src="dashboard.js"></script>
+
 </body>
 </html>
