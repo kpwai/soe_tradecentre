@@ -223,7 +223,7 @@ function drawChart(data, exporter, product) {
     trendValues.push(avgTariff);  // aggregated tariff
   });
 
-  // ---- STEP 3: Build WTO-style trend ----
+  // ---- STEP 3: Build trend ----
   const lineTrace = {
     x: trendDates,
     y: trendValues,
@@ -249,7 +249,7 @@ function drawChart(data, exporter, product) {
     },
     yaxis: { title: "Tariff (%)" },
     font: { family: "Georgia, serif", size: 14 },
-    showlegend: false,
+    showlegend: true,
     plot_bgcolor: "#fff",
     paper_bgcolor: "#fff"
   };
@@ -336,6 +336,7 @@ document.getElementById("applyFilters").addEventListener("click", () => applyFil
 // INITIALIZE DASHBOARD
 // ========================================================
 loadCSV();
+
 
 
 
