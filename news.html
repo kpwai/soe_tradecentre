@@ -9,7 +9,6 @@
   <style>
     html, body {
       font-family: Georgia, serif;
-      font-size: 1.0rem;
       background-color: #f8f9fa;
       margin: 0;
       padding: 0;
@@ -53,6 +52,7 @@
       padding: 2rem;
       background: #fff;
       border-radius: 8px;
+      font-family: Georgia, serif;
       box-shadow: 0 0 8px rgba(0,0,0,0.1);
     }
 
@@ -60,13 +60,14 @@
       color: #003366;
     }
 
-     /* === FILTER CONTROLS === */
+    /* === FILTER CONTROLS === */
     #controls {
       width: 100%;
       margin-bottom: 1.8rem;
       display: flex;
       flex-direction: column;
       gap: 1rem;
+      font-family: Georgia, serif;
     }
 
     /* Each row is a 3-column grid so columns line up */
@@ -107,6 +108,7 @@
       background-color: #003366;
       color: white;
       font-weight: bold;
+      font-family: Georgia, serif;
       cursor: pointer;
       padding: 0.45rem 0.6rem;
     }
@@ -162,7 +164,8 @@
     @media (max-width: 768px) {
       .control-row,
       .date-row {
-        flex-direction: column;
+        grid-template-columns: 1fr;
+        row-gap: 0.75rem;
       }
     }
   </style>
@@ -226,28 +229,6 @@
         <label>&nbsp;</label>
         <button id="applyFilters">Apply Filters</button>
       </div>
-    </div>
-
-  </div>
-
-    <!-- ROW 2: From / To / Apply Filters -->
-    <div class="date-row">
-
-      <div class="control-block">
-        <label>From:</label>
-        <input type="date" id="dateFrom">
-      </div>
-
-      <div class="control-block">
-        <label>To:</label>
-        <input type="date" id="dateTo">
-      </div>
-
-      <div class="control-block">
-        <label>&nbsp;</label>
-        <button id="applyFilters">Apply Filters</button>
-      </div>
-
     </div>
 
   </div>
