@@ -1,16 +1,14 @@
 // ========================================================
-// Trade Model (CP) Equilibrium Dashboard — Trend Version
+// Trade Model (CP) Equilibrium Dashboard
 // ========================================================
 
 // === CONFIGURATION ===
-const dataPath = "data/tariff_data.csv"; // Path to your CSV file
+const dataPath = "data/tariff_data.csv";  // Path to your CSV file
 
-// === GLOBAL DATA STORAGE ===
+// === GLOBAL VARIABLES ===
 let tariffData = [];
 
-// ========================================================
-// LOAD CSV
-// ========================================================
+// === LOAD CSV ===
 async function loadCSV() {
   try {
     console.log("Fetching:", dataPath);
@@ -27,7 +25,7 @@ async function loadCSV() {
       importer: row.importer?.trim() || "",
       exporter: row.exporter?.trim() || "",
       product: row.product?.trim() || "",
-      date_eff: new Date(row.date_eff), // expects M/D/Y format
+      date_eff: new Date(row.date_eff),   // MM/DD/YY format
       applied_tariff: parseFloat(row.applied_tariff || 0),
       imports_value_usd: parseFloat(row.imports_value_usd || 0),
     }));
@@ -35,12 +33,20 @@ async function loadCSV() {
     console.log("Rows loaded:", tariffData.length);
 
     populateDropdowns();
-    applyFilters(true); // Initial load = full history
+
+    // === Default view: last 6 months ===
+    const today = new Date();
+    const past6Months = new Date();
+    past6Months.setMonth(today.getMonth() - 6);
+    document.getElementById("dateFrom").valueAsDate = past6Months;
+    document.getElementById("dateTo").valueAsDate = today;
+
+    applyFilters(); // Initial graph + summary table
 
   } catch (error) {
     console.error("Error loading CSV:", error);
     document.getElementById("tariffChart").innerHTML =
-      "<p style='color:red'>Failed to load tariff data.</p>";
+      "<p style='color:red'>Failed to load tariff data. Check CSV link.</p>";
   }
 }
 
@@ -48,130 +54,116 @@ async function loadCSV() {
 // POPULATE DROPDOWNS
 // ========================================================
 function populateDropdowns() {
-  // Importer fixed to United States
-  const importerSelect = document.getElementById("importerSelect");
-  importerSelect.innerHTML = `<option value="United States" selected>United States</option>`;
+  // Importer always fixed
+  document.getElementById("importerSelect").innerHTML =
+    `<option value="United States" selected>United States</option>`;
 
-  // Populate exporters
-  const exporters = [...new Set(tariffData.map(d => d.exporter))].sort();
+  const exporters = [...new Set(tariffData.map(d => d.exporter.trim()))].sort();
+  const products = [...new Set(tariffData.map(d => d.product.trim()))].sort();
+
   populateSelect("exporterSelect", exporters, "World");
-
-  // Populate product codes
-  const products = [...new Set(tariffData.map(d => d.product))].sort();
   populateSelect("productSelect", products, "All");
 }
 
-function populateSelect(id, values, defaultLabel) {
+function populateSelect(id, values, defaultLabel = "All") {
   const select = document.getElementById(id);
-  select.innerHTML =
-    `<option value="">${defaultLabel}</option>` +
+  if (!select) return;
+
+  select.innerHTML = `<option value="">${defaultLabel}</option>` +
     values.map(v => `<option value="${v}">${v}</option>`).join("");
 }
 
 // ========================================================
-// APPLY FILTERS
+// APPLY FILTERS (Daily trend, no aggregation)
 // ========================================================
-function applyFilters(isInitial = false) {
-  const importer = "United States"; // always fixed
+function applyFilters() {
+  const importer = document.getElementById("importerSelect").value;
   const exporter = document.getElementById("exporterSelect").value;
-  const product = document.getElementById("productSelect").value;
+  const product  = document.getElementById("productSelect").value;
   const dateFrom = document.getElementById("dateFrom").value;
-  const dateTo = document.getElementById("dateTo").value;
+  const dateTo   = document.getElementById("dateTo").value;
 
-  let startDate = dateFrom ? new Date(dateFrom) : null;
-  let endDate = dateTo ? new Date(dateTo) : null;
+  const startDate = dateFrom ? new Date(dateFrom) : null;
+  const endDate   = dateTo   ? new Date(dateTo)   : null;
 
   const filtered = tariffData.filter(d => {
-    const matchImporter = d.importer === importer;
-    const matchExporter = !exporter || d.exporter === exporter;
-    const matchProduct = !product || d.product === product;
+    const sameImporter = !importer || d.importer === importer;
+    const sameExporter = !exporter || d.exporter.trim() === exporter.trim();
+    const sameProduct  = !product  || d.product === product;
 
-    let inRange = true;
+    const inRange =
+      (!startDate || d.date_eff >= startDate) &&
+      (!endDate   || d.date_eff <= endDate);
 
-    if (isInitial) {
-      inRange = true; // full history
-    } else if (startDate && endDate) {
-      inRange = d.date_eff >= startDate && d.date_eff <= endDate;
-    } else if (startDate && !endDate) {
-      inRange = d.date_eff >= startDate;
-    } else if (!startDate && endDate) {
-      inRange = d.date_eff <= endDate;
-    }
-
-    return matchImporter && matchExporter && matchProduct && inRange;
+    return sameImporter && sameExporter && sameProduct && inRange;
   });
 
-  drawChart(filtered, exporter, product);
+  // === Daily trend, group by unique date ===
+  const grouped = aggregateByDate(filtered);
+
+  drawChart(grouped);
   updateSummary(filtered);
 }
 
 // ========================================================
-// BUILD TREND CHART
+// AGGREGATE BY DATE (one dot per date)
 // ========================================================
-function drawChart(data, exporter, product) {
+function aggregateByDate(data) {
+  const map = {};
 
-  if (!data || data.length === 0) {
+  data.forEach(d => {
+    const dateKey = d.date_eff.toLocaleDateString("en-US"); // exact MM/DD/YYYY
+
+    if (!map[dateKey]) {
+      map[dateKey] = {
+        date_eff: d.date_eff,
+        tariffs: [],
+        values: []
+      };
+    }
+
+    map[dateKey].tariffs.push(d.applied_tariff);
+    map[dateKey].values.push(d.imports_value_usd);
+  });
+
+  return Object.values(map)
+    .map(g => ({
+      date_eff: g.date_eff,
+      applied_tariff: g.tariffs.reduce((a,b)=>a+b,0) / g.tariffs.length
+    }))
+    .sort((a,b)=>a.date_eff - b.date_eff);
+}
+
+// ========================================================
+// DRAW PLOTLY CHART (Trend line only, single point per date)
+// ========================================================
+function drawChart(data) {
+  if (data.length === 0) {
     Plotly.newPlot("tariffChart", [], { title: "No data available" });
     return;
   }
 
-  // ---- STEP 1: Extract unique tariff-change dates (MM/DD/YYYY exactly) ----
-  const changeDates = [...new Set(
-    data.map(d => d.date_eff.toLocaleDateString("en-US"))
-  )].sort((a, b) => new Date(a) - new Date(b));
-
-  // ---- STEP 2: Aggregate tariff for each date ----
-  const trendDates = [];
-  const trendValues = [];
-
-  changeDates.forEach(dateStr => {
-    const rowsOnDate = data.filter(d =>
-      d.date_eff.toLocaleDateString("en-US") === dateStr
-    );
-
-    const avgTariff = rowsOnDate.reduce((sum, d) => sum + d.applied_tariff, 0)
-                      / rowsOnDate.length;
-
-    trendDates.push(dateStr);     // label EXACTLY as MM/DD/YYYY
-    trendValues.push(avgTariff);  // aggregated tariff
-  });
-
-  // ---- STEP 3: Build trend ----
-  const lineTrace = {
-    x: trendDates,
-    y: trendValues,
-    mode: "lines+markers",
-    line: {
-      shape: "hv",     // step style
-      width: 3,
-      color: "#003366"
-    },
-    marker: {
-      size: 8,
-      color: "#003366"
-    }
+  const trace = {
+    x: data.map(d => d.date_eff.toLocaleDateString("en-US")),
+    y: data.map(d => d.applied_tariff),
+    mode: "lines+markers",         // trend line + point
+    name: "Tariff Trend (%)",
+    marker: { size: 7, color: "#003366" },
+    line: { width: 3, color: "#003366" }
   };
 
-  // ---- STEP 4: Use category axis to preserve EXACT dates ----
   const layout = {
-    title: "Tariff Trend",
-    xaxis: {
-      title: "Date",
-      type: "category",     // <-- THIS is the key
-      tickangle: -45
-    },
+    title: "Applied Tariff Trend Over Time",
+    xaxis: { title: "Date" },
     yaxis: { title: "Tariff (%)" },
-    font: { family: "Georgia, serif", size: 14 },
-    showlegend: false,
-    plot_bgcolor: "#fff",
-    paper_bgcolor: "#fff"
+    font: { family: "Georgia" }
   };
 
-  Plotly.newPlot("tariffChart", [lineTrace], layout);
+  Plotly.newPlot("tariffChart", [trace], layout);
 }
 
 // ========================================================
-// SUMMARY TABLE
+// SUMMARY TABLE (with robust fix for DataTables)
 // ========================================================
 function updateSummary(data) {
   const tbody = document.querySelector("#summaryTable tbody");
@@ -183,20 +175,18 @@ function updateSummary(data) {
     return;
   }
 
-  const importer = document.getElementById("importerSelect").value || "United States";
-  const exporter = document.getElementById("exporterSelect").value || "";
+  const importer = "United States";
+  const exporter = document.getElementById("exporterSelect").value || "World";
   const product  = document.getElementById("productSelect").value || "All products";
 
-  const exporterLabel = exporter === "" ? "World" : exporter;
-  summaryTitle.textContent = `${importer} imports from ${exporterLabel} — ${product}`;
+  summaryTitle.textContent = `${importer} imports from ${exporter} — ${product}`;
 
-  // Normalize exporter text for matching
-  const clean = (x) =>
-    x?.trim().toLowerCase().normalize("NFKC").replace(/\s+/g, " ") || "";
+  // Clean text normalization
+  const clean = (x) => x?.trim().toLowerCase().normalize("NFKC").replace(/\s+/g, " ") || "";
 
   const exporterClean = clean(exporter);
 
-  // Filter only matching exporter (if not World)
+  // Filter only that exporter if not World
   let filteredData = data;
   if (exporterClean !== "") {
     filteredData = data.filter(d => clean(d.exporter) === exporterClean);
@@ -207,13 +197,11 @@ function updateSummary(data) {
     return;
   }
 
-  // Group rows by exporter + exact date
+  // Group data by exporter + date
   const grouped = {};
   filteredData.forEach(d => {
     const dateKey = d.date_eff.toLocaleDateString("en-US");
-    const exporterKey = clean(d.exporter);
-
-    const key = `${exporterKey}_${dateKey}`;
+    const key = `${clean(d.exporter)}_${dateKey}`;
 
     if (!grouped[key]) {
       grouped[key] = {
@@ -230,7 +218,6 @@ function updateSummary(data) {
     grouped[key].values.push(d.imports_value_usd);
   });
 
-  // Compute summary entries
   const summaryRows = Object.values(grouped).map(g => {
     const simpleAvg = g.tariffs.reduce((a,b)=>a+b,0) / g.tariffs.length;
     const totalTrade = g.values.reduce((a,b)=>a+b,0);
@@ -247,8 +234,28 @@ function updateSummary(data) {
     };
   });
 
-  // Render table
-  tbody.innerHTML = summaryRows.map(r => `
+  // === FIX: FULL TABLE REBUILD ===
+  if ($.fn.DataTable.isDataTable("#summaryTable")) {
+    $('#summaryTable').DataTable().destroy();
+    $('#summaryTable').empty();
+    $('#summaryTable').html(`
+      <thead>
+        <tr>
+          <th>Partner</th>
+          <th>Date (MM/DD/YYYY)</th>
+          <th>Simple Avg Tariff</th>
+          <th>Weighted Avg Tariff</th>
+          <th>Affected Trade (USD)</th>
+          <th>Affected Trade Share</th>
+          <th>Affected Tariff Line Share</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    `);
+  }
+
+  const newTbody = document.querySelector("#summaryTable tbody");
+  newTbody.innerHTML = summaryRows.map(r => `
     <tr>
       <td>${r.partner}</td>
       <td>${r.date}</td>
@@ -260,23 +267,15 @@ function updateSummary(data) {
     </tr>
   `).join("");
 
-  // Initialize or refresh DataTable
-  if ($.fn.DataTable.isDataTable("#summaryTable")) {
-    $("#summaryTable").DataTable().clear().destroy();
-  }
-
+  // === Initialize DataTable again ===
   $("#summaryTable").DataTable({
     pageLength: 5,
     order: [[1, "asc"]],
   });
 }
 
-// ========================================================
-// EVENT LISTENER
-// ========================================================
-document.getElementById("applyFilters").addEventListener("click", () => applyFilters(false));
+// === EVENT LISTENER ===
+document.getElementById("applyFilters").addEventListener("click", applyFilters);
 
-// ========================================================
-// INITIALIZE DASHBOARD
-// ========================================================
+// === INITIALIZE ===
 loadCSV();
