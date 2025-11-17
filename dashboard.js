@@ -113,61 +113,64 @@ function drawChart(data) {
     return;
   }
 
-  // === STEP 1 — Extract unique dates from FILTERED data ===
+  // === STEP 1 — Extract unique dates (real date objects) ===
   var dateMap = {};
 
   for (var i = 0; i < data.length; i++) {
     var d = data[i];
-    var dateStr = d.date_eff.toLocaleDateString("en-US");
+    var dateObj = d.date_eff;
+    var dateStr = dateObj.toLocaleDateString("en-US");
 
     if (!dateMap[dateStr]) {
-      dateMap[dateStr] = [];
+      dateMap[dateStr] = { date: dateObj, tariffs: [] };
     }
-    dateMap[dateStr].push(d.applied_tariff);
+    dateMap[dateStr].tariffs.push(d.applied_tariff);
   }
 
-  // === STEP 2 — Build trend arrays ===
-  var trendDates = [];
-  var trendValues = [];
+  // === STEP 2 — Build sorted arrays ===
+  var allDates = [];
+  var allLabels = [];
+  var allValues = [];
 
-  var sortedKeys = Object.keys(dateMap).sort(function(a, b) {
+  var keys = Object.keys(dateMap).sort(function(a, b){
     return new Date(a) - new Date(b);
   });
 
-  for (var j = 0; j < sortedKeys.length; j++) {
-    var k = sortedKeys[j];
-    var arr = dateMap[k];
-    var avg = arr.reduce(function(a, b){ return a + b; }, 0) / arr.length;
+  for (var j = 0; j < keys.length; j++) {
+    var k = keys[j];
+    var obj = dateMap[k];
+    var avg = obj.tariffs.reduce(function(a,b){ return a+b; }, 0) / obj.tariffs.length;
 
-    trendDates.push(k);        // category axis label
-    trendValues.push(avg);     // tariff
+    allDates.push(obj.date);     // REAL Date object
+    allLabels.push(k);           // label MM/DD/YYYY
+    allValues.push(avg);
   }
 
-  // === STEP 3 — Build trace ===
+  // === STEP 3 — Build Plotly trace ===
   var trace = {
-    x: trendDates,             // category axis ensures ALL labels shown
-    y: trendValues,
+    x: allDates,
+    y: allValues,
     mode: "lines+markers",
     line: { shape: "hv", width: 3, color: "#003366" },
     marker: { size: 8, color: "#003366" }
   };
 
-  // === STEP 4 — CATEGORY AXIS to force ALL labels ===
+  // === STEP 4 — TRUE DATE SCALING + FORCE ALL LABELS ===
   var layout = {
-    title: "Tariff Trend by Date",
+    title: "Tariff Trend",
     xaxis: {
       title: "Date",
-      type: "category",        // << this forces every date to show
-      tickangle: -45,
-      tickmode: "array",
-      tickvals: trendDates,
-      ticktext: trendDates
+      type: "date",
+      tickmode: "array",     // force custom ticks
+      tickvals: allDates,    // REAL dates for correct spacing
+      ticktext: allLabels,   // MM/DD/YYYY for each dot
+      tickangle: -45
     },
     yaxis: { title: "Tariff (%)" },
     font: { family: "Georgia, serif", size: 14 },
-    showlegend: false,
     plot_bgcolor: "#fff",
-    paper_bgcolor: "#fff"
+    paper_bgcolor: "#fff",
+    showlegend: false
   };
 
   Plotly.newPlot("tariffChart", [trace], layout);
@@ -253,5 +256,6 @@ document.getElementById("applyFilters").addEventListener("click", function() {
 // INITIALIZE DASHBOARD
 // ========================================================
 loadCSV();
+
 
 
