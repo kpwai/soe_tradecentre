@@ -254,10 +254,3 @@ document.getElementById("applyFilters").addEventListener("click", function() {
 // INITIALIZE DASHBOARD
 // ========================================================
 loadCSV();
-
-
-
-
-
-
-
