@@ -45,7 +45,7 @@ async function loadCSV() {
       "<p style='color:red'> Failed to load tariff data.</p>";
   }
 }
-
+/*
 // ========================================================
 // POPULATE DROPDOWNS
 // ========================================================
@@ -172,6 +172,274 @@ function drawChart(data) {
   };
 
   Plotly.newPlot("tariffChart", [trace], layout);
+}*/
+// =====================================
+// POPULATE CONTROLS
+// =====================================
+function populateDropdowns() {
+  // Importer fixed to United States
+  document.getElementById("importerSelect").innerHTML =
+    "<option value='United States' selected>United States</option>";
+
+  // Exporters
+  var exporters = Array.from(new Set(
+    tariffData.map(function(d) { return d.exporter; })
+  )).sort();
+
+  populateExporterCheckboxes(exporters);
+
+  // Products
+  var products = Array.from(new Set(
+    tariffData.map(function(d) { return d.product; })
+  )).sort();
+
+  populateSelect("productSelect", products, "All");
+}
+
+function populateSelect(id, values, defaultLabel) {
+  var html = "<option value=''>" + defaultLabel + "</option>";
+  for (var i = 0; i < values.length; i++) {
+    html += "<option value='" + values[i] + "'>" + values[i] + "</option>";
+  }
+  document.getElementById(id).innerHTML = html;
+}
+
+// Build checkbox list for exporters
+function populateExporterCheckboxes(exporters) {
+  var box = document.getElementById("exporterBox");
+  box.innerHTML = "";
+
+  // "World" checkbox (Option A behavior)
+  box.innerHTML +=
+    "<label><input type='checkbox' id='exporter_world' checked> World (All exporters)</label>";
+
+  for (var i = 0; i < exporters.length; i++) {
+    var exp = exporters[i];
+    box.innerHTML +=
+      "<label><input type='checkbox' class='expCheck' value='" + exp + "'> " + exp + "</label>";
+  }
+
+  // World ↔ other exporters mutual exclusivity
+  var worldCheck = document.getElementById("exporter_world");
+  worldCheck.addEventListener("change", function() {
+    if (this.checked) {
+      var checks = document.querySelectorAll(".expCheck");
+      for (var j = 0; j < checks.length; j++) {
+        checks[j].checked = false;
+      }
+    }
+  });
+
+  var otherChecks = document.querySelectorAll(".expCheck");
+  for (var k = 0; k < otherChecks.length; k++) {
+    otherChecks[k].addEventListener("change", function() {
+      if (this.checked) {
+        document.getElementById("exporter_world").checked = false;
+      } else {
+        // If nothing else is selected, default back to World
+        var anySelected = document.querySelector(".expCheck:checked");
+        if (!anySelected) {
+          document.getElementById("exporter_world").checked = true;
+        }
+      }
+    });
+  }
+}
+
+// Helper to get selected exporters
+function getSelectedExporters() {
+  var worldChecked = document.getElementById("exporter_world").checked;
+  if (worldChecked) {
+    return ["WORLD"];  // special flag
+  }
+  var checks = document.querySelectorAll(".expCheck:checked");
+  var arr = [];
+  for (var i = 0; i < checks.length; i++) {
+    arr.push(checks[i].value);
+  }
+  if (arr.length === 0) {
+    // Default to WORLD if nothing selected
+    return ["WORLD"];
+  }
+  return arr;
+}
+
+// =====================================
+// APPLY FILTERS
+// =====================================
+function applyFilters(isInitial) {
+  var importer = "United States"; // fixed
+  var exporters = getSelectedExporters();
+  var worldMode = (exporters.length === 1 && exporters[0] === "WORLD");
+
+  var product = document.getElementById("productSelect").value;
+  var df = document.getElementById("dateFrom").value;
+  var dt = document.getElementById("dateTo").value;
+
+  var start = df ? new Date(df) : null;
+  var end = dt ? new Date(dt) : null;
+
+  var filtered = tariffData.filter(function(d) {
+    // importer
+    if (d.importer !== importer) return false;
+
+    // product
+    if (product && d.product !== product) return false;
+
+    // exporter logic
+    if (!worldMode) {
+      if (exporters.indexOf(d.exporter) === -1) return false;
+    }
+
+    // date range
+    if (!isInitial) {
+      if (start && d.date_eff < start) return false;
+      if (end && d.date_eff > end) return false;
+    }
+
+    return true;
+  });
+
+  drawChart(filtered, exporters, worldMode);
+  updateSummary(filtered, exporters, worldMode);
+}
+
+// =====================================
+// CHART (TRUE DATE SCALING + MULTI EXPORTER)
+// =====================================
+function drawChart(data, exporters, worldMode) {
+  var chartDiv = document.getElementById("tariffChart");
+
+  if (!data || data.length === 0) {
+    Plotly.newPlot(chartDiv, [], { title: "No Data" });
+    return;
+  }
+
+  var traces = [];
+
+  // ======================================================
+  // WORLD MODE (Single Aggregated Line)
+  // ======================================================
+  if (worldMode) {
+    var grouped = {};
+
+    data.forEach(function (d) {
+      var ds = d.date_eff.toLocaleDateString("en-US");
+      if (!grouped[ds]) grouped[ds] = [];
+      grouped[ds].push(d.applied_tariff);
+    });
+
+    var allDates = [];
+    var allLabels = [];
+    var allValues = [];
+
+    Object.keys(grouped)
+      .sort((a, b) => new Date(a) - new Date(b))
+      .forEach(function (key) {
+        allDates.push(new Date(key));      // REAL date object
+        allLabels.push(key);               // MM/DD/YYYY label
+
+        var arr = grouped[key];
+        var avg = arr.reduce((a, b) => a + b, 0) / arr.length;
+        allValues.push(avg);
+      });
+
+    traces.push({
+      x: allDates,
+      y: allValues,
+      mode: "lines+markers",
+      name: "World",
+      line: { shape: "hv", width: 3, color: "#003366" },
+      marker: { size: 8, color: "#003366" }
+    });
+
+    // === Layout using your Tick Array logic ===
+    var layout = {
+      title: "Tariff Trend",
+      xaxis: {
+        title: "Date",
+        type: "date",
+        tickmode: "array",
+        tickvals: allDates,     // TRUE SPACING
+        ticktext: allLabels,    // EACH DATE SHOWN
+        tickangle: -45
+      },
+      yaxis: { title: "Tariff (%)" },
+      font: { family: "Georgia, serif", size: 14 },
+      plot_bgcolor: "#fff",
+      paper_bgcolor: "#fff",
+      showlegend: false
+    };
+
+    Plotly.newPlot(chartDiv, traces, layout);
+    return;
+  }
+
+  // ======================================================
+  // MULTI-EXPORTER MODE (Each exporter gets its own line)
+  // ======================================================
+
+  // 1. Collect all real tariff-change dates across selected exporters
+  var dateSet = new Set();
+  data.forEach(d => dateSet.add(d.date_eff.toLocaleDateString("en-US")));
+
+  var allLabels = Array.from(dateSet).sort((a, b) => new Date(a) - new Date(b));
+  var allDates = allLabels.map(label => new Date(label));
+
+  // 2. Build a trace for each exporter
+  exporters.forEach(function (exp) {
+    var rows = data.filter(d => d.exporter === exp);
+    if (rows.length === 0) return;
+
+    var dailyMap = {};
+    rows.forEach(d => {
+      var ds = d.date_eff.toLocaleDateString("en-US");
+      if (!dailyMap[ds]) dailyMap[ds] = [];
+      dailyMap[ds].push(d.applied_tariff);
+    });
+
+    var x = [];
+    var y = [];
+
+    allLabels.forEach(function (label) {
+      if (dailyMap[label]) {
+        var arr = dailyMap[label];
+        var avg = arr.reduce((a, b) => a + b, 0) / arr.length;
+
+        x.push(new Date(label));   // REAL spaced date
+        y.push(avg);               // VALUE exists → dot is shown
+      }
+    });
+
+    traces.push({
+      x: x,
+      y: y,
+      mode: "lines+markers",
+      name: exp,
+      line: { shape: "hv", width: 3 },
+      marker: { size: 8 }
+    });
+  });
+
+  // === Layout using your Tick Array logic ===
+  var layout = {
+    title: "Exporter Comparison",
+    xaxis: {
+      title: "Date",
+      type: "date",
+      tickmode: "array",
+      tickvals: allDates,    // TRUE spacing across chart
+      ticktext: allLabels,   // EXACT MM/DD/YYYY text
+      tickangle: -45
+    },
+    yaxis: { title: "Tariff (%)" },
+    font: { family: "Georgia, serif", size: 14 },
+    plot_bgcolor: "#fff",
+    paper_bgcolor: "#fff",
+    showlegend: true
+  };
+
+  Plotly.newPlot(chartDiv, traces, layout);
 }
 // ========================================================
 // SUMMARY TABLE
