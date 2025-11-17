@@ -71,9 +71,6 @@ function populateSelect(id, values, defaultLabel) {
     html += "<option value='" + values[i] + "'>" + values[i] + "</option>";
   }
 
-  select.innerHTML = html;
-}
-
 function populateExporterCheckboxes(exporters) {
   const box = document.getElementById("exporterBox");
   box.innerHTML = ""; // clear old items
@@ -95,8 +92,8 @@ function populateExporterCheckboxes(exporters) {
     }
   });
 }
-
-
+  select.innerHTML = html;
+}
 // ========================================================
 // APPLY FILTERS
 // ========================================================
@@ -282,6 +279,7 @@ document.getElementById("applyFilters").addEventListener("click", function() {
 // INITIALIZE DASHBOARD
 // ========================================================
 loadCSV();
+
 
 
 
