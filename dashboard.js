@@ -37,7 +37,7 @@ async function loadCSV() {
     console.log("Rows loaded:", tariffData.length);
 
     populateDropdowns();
-    applyFilters(true); // initial load = full history
+    applyFilters(true); // initial load
 
   } catch (error) {
     console.error("Error loading CSV:", error);
@@ -45,153 +45,26 @@ async function loadCSV() {
       "<p style='color:red'> Failed to load tariff data.</p>";
   }
 }
-/*
-// ========================================================
-// POPULATE DROPDOWNS
-// ========================================================
-function populateDropdowns() {
-  document.getElementById("importerSelect").innerHTML =
-    "<option value='United States' selected>United States</option>";
-  
-  var exporters = Array.from(new Set(tariffData.map(function(d){ return d.exporter; }))).sort();
-  populateSelect("exporterSelect", exporters, "World");
-
-  var products = Array.from(new Set(tariffData.map(function(d){ return d.product; }))).sort();
-  populateSelect("productSelect", products, "All");
-}
-
-function populateSelect(id, values, defaultLabel) {
-  var select = document.getElementById(id);
-
-  var html = "<option value=''>" + defaultLabel + "</option>";
-  for (var i = 0; i < values.length; i++) {
-    html += "<option value='" + values[i] + "'>" + values[i] + "</option>";
-  }
-  select.innerHTML = html;
-}
-// ========================================================
-// APPLY FILTERS
-// ========================================================
-function applyFilters(isInitial) {
-  var importer = "United States";
-  var exporter = document.getElementById("exporterSelect").value;
-  var product = document.getElementById("productSelect").value;
-  var dateFrom = document.getElementById("dateFrom").value;
-  var dateTo = document.getElementById("dateTo").value;
-
-  var startDate = dateFrom ? new Date(dateFrom) : null;
-  var endDate = dateTo ? new Date(dateTo) : null;
-
-  // Filter core logic
-  var filtered = tariffData.filter(function(d) {
-    var matchImporter = d.importer === importer;
-    var matchExporter = !exporter || d.exporter === exporter;
-    var matchProduct = !product || d.product === product;
-    var inRange = true;
-
-    if (!isInitial) {
-      if (startDate && endDate) inRange = d.date_eff >= startDate && d.date_eff <= endDate;
-      else if (startDate) inRange = d.date_eff >= startDate;
-      else if (endDate) inRange = d.date_eff <= endDate;
-    }
-
-    return matchImporter && matchExporter && matchProduct && inRange;
-  });
-
-  drawChart(filtered);
-  updateSummary(filtered);
-}
 
 // ========================================================
-// TRUE DATE-SCALED CHART
-// ========================================================
-function drawChart(data) {
-  if (!data || data.length === 0) {
-    Plotly.newPlot("tariffChart", [], { title: "No data available" });
-    return;
-  }
-
-  // === STEP 1 — Extract unique dates (real date objects) ===
-  var dateMap = {};
-
-  for (var i = 0; i < data.length; i++) {
-    var d = data[i];
-    var dateObj = d.date_eff;
-    var dateStr = dateObj.toLocaleDateString("en-US");
-
-    if (!dateMap[dateStr]) {
-      dateMap[dateStr] = { date: dateObj, tariffs: [] };
-    }
-    dateMap[dateStr].tariffs.push(d.applied_tariff);
-  }
-
-  // === STEP 2 — Build sorted arrays ===
-  var allDates = [];
-  var allLabels = [];
-  var allValues = [];
-
-  var keys = Object.keys(dateMap).sort(function(a, b){
-    return new Date(a) - new Date(b);
-  });
-
-  for (var j = 0; j < keys.length; j++) {
-    var k = keys[j];
-    var obj = dateMap[k];
-    var avg = obj.tariffs.reduce(function(a,b){ return a+b; }, 0) / obj.tariffs.length;
-
-    allDates.push(obj.date);     // REAL Date object
-    allLabels.push(k);           // label MM/DD/YYYY
-    allValues.push(avg);
-  }
-
-  // === STEP 3 — Build Plotly trace ===
-  var trace = {
-    x: allDates,
-    y: allValues,
-    mode: "lines+markers",
-    line: { shape: "hv", width: 3, color: "#003366" },
-    marker: { size: 8, color: "#003366" }
-  };
-
-  // === STEP 4 — TRUE DATE SCALING + FORCE ALL LABELS ===
-  var layout = {
-    title: "Tariff Trend",
-    xaxis: {
-      title: "Date",
-      type: "date",
-      tickmode: "array",     // force custom ticks
-      tickvals: allDates,    // REAL dates for correct spacing
-      ticktext: allLabels,   // MM/DD/YYYY for each dot
-      tickangle: -45
-    },
-    yaxis: { title: "Tariff (%)" },
-    font: { family: "Georgia, serif", size: 14 },
-    plot_bgcolor: "#fff",
-    paper_bgcolor: "#fff",
-    showlegend: false
-  };
-
-  Plotly.newPlot("tariffChart", [trace], layout);
-}*/
-// =====================================
 // POPULATE CONTROLS
-// =====================================
+// ========================================================
 function populateDropdowns() {
   // Importer fixed to United States
   document.getElementById("importerSelect").innerHTML =
     "<option value='United States' selected>United States</option>";
 
   // Exporters
-  var exporters = Array.from(new Set(
-    tariffData.map(function(d) { return d.exporter; })
-  )).sort();
+  var exporters = Array.from(
+    new Set(tariffData.map(d => d.exporter))
+  ).sort();
 
   populateExporterCheckboxes(exporters);
 
   // Products
-  var products = Array.from(new Set(
-    tariffData.map(function(d) { return d.product; })
-  )).sort();
+  var products = Array.from(
+    new Set(tariffData.map(d => d.product))
+  ).sort();
 
   populateSelect("productSelect", products, "All");
 }
@@ -204,71 +77,92 @@ function populateSelect(id, values, defaultLabel) {
   document.getElementById(id).innerHTML = html;
 }
 
-// Build checkbox list for exporters
+// ========================================================
+// EXPORTER CHECKBOX DROPDOWN
+// ========================================================
 function populateExporterCheckboxes(exporters) {
   var box = document.getElementById("exporterBox");
   box.innerHTML = "";
 
-  // "World" checkbox (Option A behavior)
+  // "World" checkbox (default)
   box.innerHTML +=
     "<label><input type='checkbox' id='exporter_world' checked> World (All exporters)</label>";
 
-  for (var i = 0; i < exporters.length; i++) {
-    var exp = exporters[i];
+  exporters.forEach(exp => {
     box.innerHTML +=
       "<label><input type='checkbox' class='expCheck' value='" + exp + "'> " + exp + "</label>";
-  }
-
-  // World ↔ other exporters mutual exclusivity
-  var worldCheck = document.getElementById("exporter_world");
-  worldCheck.addEventListener("change", function() {
-    if (this.checked) {
-      var checks = document.querySelectorAll(".expCheck");
-      for (var j = 0; j < checks.length; j++) {
-        checks[j].checked = false;
-      }
-    }
   });
 
+  var worldCheck = document.getElementById("exporter_world");
   var otherChecks = document.querySelectorAll(".expCheck");
-  for (var k = 0; k < otherChecks.length; k++) {
-    otherChecks[k].addEventListener("change", function() {
+
+  // WORLD handler
+  worldCheck.addEventListener("change", function () {
+    if (this.checked) {
+      document.querySelectorAll(".expCheck").forEach(c => c.checked = false);
+    }
+    updateExporterDisplay();
+  });
+
+  // Individual exporter handlers
+  otherChecks.forEach(c => {
+    c.addEventListener("change", function () {
       if (this.checked) {
-        document.getElementById("exporter_world").checked = false;
+        worldCheck.checked = false;
       } else {
-        // If nothing else is selected, default back to World
-        var anySelected = document.querySelector(".expCheck:checked");
-        if (!anySelected) {
-          document.getElementById("exporter_world").checked = true;
+        // No exporter → fallback to WORLD
+        if (!document.querySelector(".expCheck:checked")) {
+          worldCheck.checked = true;
         }
       }
+      updateExporterDisplay();
     });
-  }
+  });
+
+  // Initialize display text
+  updateExporterDisplay();
 }
 
-// Helper to get selected exporters
+// Update display text for dropdown
+function updateExporterDisplay() {
+  const world = document.getElementById("exporter_world").checked;
+  const checks = document.querySelectorAll(".expCheck:checked");
+
+  if (world) {
+    document.querySelector("#exporterDisplay span").textContent =
+      "World (All exporters)";
+    return;
+  }
+
+  if (checks.length === 0) {
+    document.querySelector("#exporterDisplay span").textContent =
+      "Select exporters…";
+    return;
+  }
+
+  const names = Array.from(checks).map(c => c.value);
+  document.querySelector("#exporterDisplay span").textContent =
+    names.length > 3 ? names.slice(0, 3).join(", ") + "…" : names.join(", ");
+}
+
+// Helper: Get selected exporters
 function getSelectedExporters() {
-  var worldChecked = document.getElementById("exporter_world").checked;
-  if (worldChecked) {
-    return ["WORLD"];  // special flag
-  }
-  var checks = document.querySelectorAll(".expCheck:checked");
-  var arr = [];
-  for (var i = 0; i < checks.length; i++) {
-    arr.push(checks[i].value);
-  }
-  if (arr.length === 0) {
-    // Default to WORLD if nothing selected
+  if (document.getElementById("exporter_world").checked) {
     return ["WORLD"];
   }
+
+  var checks = document.querySelectorAll(".expCheck:checked");
+  var arr = Array.from(checks).map(c => c.value);
+
+  if (arr.length === 0) return ["WORLD"];
   return arr;
 }
 
-// =====================================
+// ========================================================
 // APPLY FILTERS
-// =====================================
+// ========================================================
 function applyFilters(isInitial) {
-  var importer = "United States"; // fixed
+  var importer = "United States";
   var exporters = getSelectedExporters();
   var worldMode = (exporters.length === 1 && exporters[0] === "WORLD");
 
@@ -280,18 +174,13 @@ function applyFilters(isInitial) {
   var end = dt ? new Date(dt) : null;
 
   var filtered = tariffData.filter(function(d) {
-    // importer
     if (d.importer !== importer) return false;
-
-    // product
     if (product && d.product !== product) return false;
 
-    // exporter logic
     if (!worldMode) {
-      if (exporters.indexOf(d.exporter) === -1) return false;
+      if (!exporters.includes(d.exporter)) return false;
     }
 
-    // date range
     if (!isInitial) {
       if (start && d.date_eff < start) return false;
       if (end && d.date_eff > end) return false;
@@ -304,9 +193,9 @@ function applyFilters(isInitial) {
   updateSummary(filtered, exporters, worldMode);
 }
 
-// =====================================
-// CHART (TRUE DATE SCALING + MULTI EXPORTER)
-// =====================================
+// ========================================================
+// CHART — TRUE DATE SCALING & MULTI-EXPORTER
+// ========================================================
 function drawChart(data, exporters, worldMode) {
   var chartDiv = document.getElementById("tariffChart");
 
@@ -317,9 +206,7 @@ function drawChart(data, exporters, worldMode) {
 
   var traces = [];
 
-  // ======================================================
-  // WORLD MODE (Single Aggregated Line)
-  // ======================================================
+  // WORLD MODE (aggregated)
   if (worldMode) {
     var grouped = {};
 
@@ -336,8 +223,8 @@ function drawChart(data, exporters, worldMode) {
     Object.keys(grouped)
       .sort((a, b) => new Date(a) - new Date(b))
       .forEach(function (key) {
-        allDates.push(new Date(key));      // REAL date object
-        allLabels.push(key);               // MM/DD/YYYY label
+        allDates.push(new Date(key));
+        allLabels.push(key);
 
         var arr = grouped[key];
         var avg = arr.reduce((a, b) => a + b, 0) / arr.length;
@@ -353,15 +240,14 @@ function drawChart(data, exporters, worldMode) {
       marker: { size: 8, color: "#003366" }
     });
 
-    // === Layout using your Tick Array logic ===
     var layout = {
       title: "Tariff Trend",
       xaxis: {
         title: "Date",
         type: "date",
         tickmode: "array",
-        tickvals: allDates,     // TRUE SPACING
-        ticktext: allLabels,    // EACH DATE SHOWN
+        tickvals: allDates,
+        ticktext: allLabels,
         tickangle: -45
       },
       yaxis: { title: "Tariff (%)" },
@@ -375,18 +261,13 @@ function drawChart(data, exporters, worldMode) {
     return;
   }
 
-  // ======================================================
-  // MULTI-EXPORTER MODE (Each exporter gets its own line)
-  // ======================================================
-
-  // 1. Collect all real tariff-change dates across selected exporters
+  // MULTI-EXPORTER MODE
   var dateSet = new Set();
   data.forEach(d => dateSet.add(d.date_eff.toLocaleDateString("en-US")));
 
-  var allLabels = Array.from(dateSet).sort((a, b) => new Date(a) - new Date(b));
+  var allLabels = Array.from(dateSet).sort((a,b) => new Date(a) - new Date(b));
   var allDates = allLabels.map(label => new Date(label));
 
-  // 2. Build a trace for each exporter
   exporters.forEach(function (exp) {
     var rows = data.filter(d => d.exporter === exp);
     if (rows.length === 0) return;
@@ -405,9 +286,8 @@ function drawChart(data, exporters, worldMode) {
       if (dailyMap[label]) {
         var arr = dailyMap[label];
         var avg = arr.reduce((a, b) => a + b, 0) / arr.length;
-
-        x.push(new Date(label));   // REAL spaced date
-        y.push(avg);               // VALUE exists → dot is shown
+        x.push(new Date(label));
+        y.push(avg);
       }
     });
 
@@ -421,15 +301,14 @@ function drawChart(data, exporters, worldMode) {
     });
   });
 
-  // === Layout using your Tick Array logic ===
   var layout = {
     title: "Exporter Comparison",
     xaxis: {
       title: "Date",
       type: "date",
       tickmode: "array",
-      tickvals: allDates,    // TRUE spacing across chart
-      ticktext: allLabels,   // EXACT MM/DD/YYYY text
+      tickvals: allDates,
+      ticktext: allLabels,
       tickangle: -45
     },
     yaxis: { title: "Tariff (%)" },
@@ -441,10 +320,11 @@ function drawChart(data, exporters, worldMode) {
 
   Plotly.newPlot(chartDiv, traces, layout);
 }
+
 // ========================================================
 // SUMMARY TABLE
 // ========================================================
-function updateSummary(data) {
+function updateSummary(data, exporters, worldMode) {
   var tbody = document.querySelector("#summaryTable tbody");
   var summaryTitle = document.getElementById("summary-title");
 
@@ -454,56 +334,58 @@ function updateSummary(data) {
     return;
   }
 
-  var exporter = document.getElementById("exporterSelect").value || "World";
-  var product = document.getElementById("productSelect").value || "All products";
-  summaryTitle.textContent = "United States imports from " + exporter + " — " + product;
+  let exporterLabel = worldMode ? "World (All exporters)" : exporters.join(", ");
+  let product = document.getElementById("productSelect").value || "All products";
 
-  // Group rows
+  summaryTitle.textContent =
+    "United States imports from " + exporterLabel + " — " + product;
+
   var grouped = {};
 
-  for (var i = 0; i < data.length; i++) {
-    var d = data[i];
+  data.forEach(d => {
     var dateKey = d.date_eff.toLocaleDateString("en-US");
     var key = d.exporter + "_" + dateKey;
 
     if (!grouped[key]) {
-      grouped[key] = { exporter: d.exporter, date: dateKey, tariffs: [], weightedTariffs: [], values: [] };
+      grouped[key] = {
+        exporter: d.exporter,
+        date: dateKey,
+        tariffs: [],
+        weightedTariffs: [],
+        values: []
+      };
     }
 
     grouped[key].tariffs.push(d.applied_tariff);
     grouped[key].weightedTariffs.push(d.applied_tariff * d.imports_value_usd);
     grouped[key].values.push(d.imports_value_usd);
-  }
+  });
 
-  // Build HTML
-  var htmlRows = "";
-  var groups = Object.values(grouped);
+  var html = "";
 
-  for (var j = 0; j < groups.length; j++) {
-    var g = groups[j];
+  Object.values(grouped).forEach(g => {
+    var simpleAvg = g.tariffs.reduce((a,b)=>a+b,0) / g.tariffs.length;
+    var totalTrade = g.values.reduce((a,b)=>a+b,0);
+    var weightedAvg =
+      g.weightedTariffs.reduce((a,b)=>a+b,0) / (totalTrade || 1);
 
-    var simpleAvg = g.tariffs.reduce(function(a, b){ return a + b; }, 0) / g.tariffs.length;
-    var totalTrade = g.values.reduce(function(a, b){ return a + b; }, 0);
-    var weightedAvg = g.weightedTariffs.reduce(function(a, b){ return a + b; }, 0) / (totalTrade || 1);
+    html += `
+      <tr>
+        <td>${g.exporter}</td>
+        <td>${g.date}</td>
+        <td>${simpleAvg.toFixed(3)}</td>
+        <td>${weightedAvg.toFixed(3)}</td>
+        <td>${totalTrade.toFixed(3)}</td>
+        <td></td>
+        <td></td>
+      </tr>`;
+  });
 
-    htmlRows +=
-      "<tr>" +
-        "<td>" + g.exporter + "</td>" +
-        "<td>" + g.date + "</td>" +
-        "<td>" + simpleAvg.toFixed(3) + "</td>" +
-        "<td>" + weightedAvg.toFixed(3) + "</td>" +
-        "<td>" + totalTrade.toFixed(3) + "</td>" +
-        "<td></td>" +
-        "<td></td>" +
-      "</tr>";
-  }
-
-  // Rebuild DataTable
   if ($.fn.DataTable.isDataTable("#summaryTable")) {
     $("#summaryTable").DataTable().destroy();
   }
 
-  tbody.innerHTML = htmlRows;
+  tbody.innerHTML = html;
 
   $("#summaryTable").DataTable({
     pageLength: 5,
@@ -512,10 +394,25 @@ function updateSummary(data) {
 }
 
 // ========================================================
-// EVENT LISTENER
+// EVENT LISTENERS
 // ========================================================
 document.getElementById("applyFilters").addEventListener("click", function() {
   applyFilters(false);
+});
+
+// Collapsible exporter dropdown
+document.getElementById("exporterDisplay").addEventListener("click", function () {
+  const panel = document.getElementById("exporterBox");
+  panel.style.display = (panel.style.display === "block") ? "none" : "block";
+});
+
+// Close dropdown when clicking outside
+document.addEventListener("click", function(e) {
+  const box = document.getElementById("exporterBox");
+  const display = document.getElementById("exporterDisplay");
+  if (!display.contains(e.target) && !box.contains(e.target)) {
+    box.style.display = "none";
+  }
 });
 
 // ========================================================
