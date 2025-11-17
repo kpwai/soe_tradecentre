@@ -113,66 +113,55 @@ function drawChart(data) {
     return;
   }
 
-  // ===== STEP 1: Collect ALL unique dates from full dataset =====
-  var allDates = Array.from(new Set(
-    tariffData.map(function(d){
-      return d.date_eff.toLocaleDateString("en-US");
-    })
-  ))
-  .sort(function(a,b){ return new Date(a) - new Date(b); });
-
-  // Convert to real Date objects
-  var allDateObjects = allDates.map(function(d){
-    return new Date(d);
-  });
-
-  // ===== STEP 2: Build date → average tariff lookup from FILTERED data =====
-  var dailyMap = {};
+  // === STEP 1 — Extract unique dates from FILTERED data ===
+  var dateMap = {};
 
   for (var i = 0; i < data.length; i++) {
     var d = data[i];
-    var dateKey = d.date_eff.toLocaleDateString("en-US");
+    var dateStr = d.date_eff.toLocaleDateString("en-US");
 
-    if (!dailyMap[dateKey]) {
-      dailyMap[dateKey] = [];
+    if (!dateMap[dateStr]) {
+      dateMap[dateStr] = [];
     }
-    dailyMap[dateKey].push(d.applied_tariff);
+    dateMap[dateStr].push(d.applied_tariff);
   }
 
-  // ===== STEP 3: Build final arrays aligned to ALL dates =====
+  // === STEP 2 — Build trend arrays ===
+  var trendDates = [];
   var trendValues = [];
 
-  for (var j = 0; j < allDates.length; j++) {
-    var dateKey = allDates[j];
+  var sortedKeys = Object.keys(dateMap).sort(function(a, b) {
+    return new Date(a) - new Date(b);
+  });
 
-    if (!dailyMap[dateKey]) {
-      // No tariff event this date in filtered range
-      trendValues.push(null); 
-    } else {
-      var arr = dailyMap[dateKey];
-      var avg = arr.reduce(function(a,b){ return a + b; }, 0) / arr.length;
-      trendValues.push(avg);
-    }
+  for (var j = 0; j < sortedKeys.length; j++) {
+    var k = sortedKeys[j];
+    var arr = dateMap[k];
+    var avg = arr.reduce(function(a, b){ return a + b; }, 0) / arr.length;
+
+    trendDates.push(k);        // category axis label
+    trendValues.push(avg);     // tariff
   }
 
-  // ===== STEP 4: Plotly trace =====
+  // === STEP 3 — Build trace ===
   var trace = {
-    x: allDateObjects,   // ALL dates
-    y: trendValues,      // null for missing dates
+    x: trendDates,             // category axis ensures ALL labels shown
+    y: trendValues,
     mode: "lines+markers",
     line: { shape: "hv", width: 3, color: "#003366" },
-    marker: { size: 8, color: "#003366" },
-    connectgaps: false   // ensures breaks where values missing
+    marker: { size: 8, color: "#003366" }
   };
 
-  // ===== STEP 5: TRUE DATE SCALING =====
+  // === STEP 4 — CATEGORY AXIS to force ALL labels ===
   var layout = {
-    title: "Tariff Trend (All Affected Dates)",
+    title: "Tariff Trend by Date",
     xaxis: {
       title: "Date",
-      type: "date",
-      tickformat: "%m/%d/%Y",
-      tickangle: -45
+      type: "category",        // << this forces every date to show
+      tickangle: -45,
+      tickmode: "array",
+      tickvals: trendDates,
+      ticktext: trendDates
     },
     yaxis: { title: "Tariff (%)" },
     font: { family: "Georgia, serif", size: 14 },
@@ -264,4 +253,5 @@ document.getElementById("applyFilters").addEventListener("click", function() {
 // INITIALIZE DASHBOARD
 // ========================================================
 loadCSV();
+
 
