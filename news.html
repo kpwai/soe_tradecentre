@@ -118,23 +118,63 @@
       color: #003366;
     }
 
-    /* Scrollable checkbox panel */
-  .checkbox-panel {
-    width: 200px;
-    max-height: 150px;    /* Adjust to your liking */
-    border: 1px solid #ccc;
-    padding: 6px;
-    overflow-y: scroll;
-    background: #fff;
-    border-radius: 4px;
-    font-family: Georgia, serif;
-  }
+     /* ================================
+       CHECKBOX DROPDOWN (COLLAPSIBLE)
+       ================================ */
 
-  .checkbox-panel label {
-    display: block;
-    margin-bottom: 3px;
-    cursor: pointer;
-  }
+    .dropdown-container {
+      position: relative;
+      width: 220px;
+    }
+
+    /* Collapsed display bar */
+    .dropdown-display {
+      border: 1px solid #ccc;
+      padding: 4px 8px;
+      background: #fff;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 28px;  /* ONE ROW */
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .dropdown-display span {
+      font-size: 0.9rem;
+      color: #003366;
+    }
+
+    .dropdown-arrow {
+      font-size: 14px;
+      color: #003366;
+    }
+
+    /* Expandable checkbox list */
+    .checkbox-panel {
+      position: absolute;
+      top: 32px;
+      left: 0;
+      width: 100%;
+      max-height: 180px;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      overflow-y: auto;
+      padding: 6px;
+      display: none;   /* hidden initially */
+      z-index: 10;
+    }
+
+    .checkbox-panel label {
+      display: block;
+      margin-bottom: 4px;
+      font-weight: normal;
+      color: #333;
+      cursor: pointer;
+    }
 
     /* Tables */
     table.dataTable {
@@ -220,15 +260,26 @@
         <select id="importerSelect"></select>
       </div>
 
-      <div class="control-block">
+      <!--<div class="control-block">
         <label>Exporter:</label>
         <select id="exporterSelect"></select>
+      </div>-->
+      <!-- ⭐ NEW CHECKBOX DROPDOWN ⭐ -->
+    <div class="dropdown-container">
+      <div class="dropdown-display" id="exporterDisplay">
+        <span>Select exporters…</span>
+        <span class="dropdown-arrow">▼</span>
       </div>
 
-      <div class="control-block">
+      <div id="exporterBox" class="checkbox-panel">
+        <!-- dashboard.js will populate -->
+      </div>
+    </div>
+
+    <div class="control-block">
         <label>Product Code:</label>
         <select id="productSelect"></select>
-      </div>
+    </div>
     </div>
 
     <!-- ROW 2: From / To / Apply Filters -->
