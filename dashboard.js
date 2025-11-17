@@ -52,12 +52,15 @@ async function loadCSV() {
 function populateDropdowns() {
   document.getElementById("importerSelect").innerHTML =
     "<option value='United States' selected>United States</option>";
-
+  
   var exporters = Array.from(new Set(tariffData.map(function(d){ return d.exporter; }))).sort();
   populateSelect("exporterSelect", exporters, "World");
 
   var products = Array.from(new Set(tariffData.map(function(d){ return d.product; }))).sort();
   populateSelect("productSelect", products, "All");
+
+  const exporters = [...new Set(tariffData.map(d => d.exporter))].sort();
+  populateExporterCheckboxes(exporters);
 }
 
 function populateSelect(id, values, defaultLabel) {
@@ -70,6 +73,29 @@ function populateSelect(id, values, defaultLabel) {
 
   select.innerHTML = html;
 }
+
+function populateExporterCheckboxes(exporters) {
+  const box = document.getElementById("exporterBox");
+  box.innerHTML = ""; // clear old items
+
+  // Add "World" as special checkbox
+  box.innerHTML += 
+    "<label><input type='checkbox' value='' id='exporter_world' checked> World (All) </label>";
+
+  exporters.forEach(exp => {
+    box.innerHTML +=
+      "<label><input type='checkbox' class='exporterCheck' value='" + exp + "'>" + exp + "</label>";
+  });
+
+  // When "World" is checked → uncheck everything else
+  document.getElementById("exporter_world").addEventListener("change", function () {
+    if (this.checked) {
+      let checks = document.querySelectorAll(".exporterCheck");
+      checks.forEach(c => c.checked = false);
+    }
+  });
+}
+
 
 // ========================================================
 // APPLY FILTERS
@@ -256,6 +282,7 @@ document.getElementById("applyFilters").addEventListener("click", function() {
 // INITIALIZE DASHBOARD
 // ========================================================
 loadCSV();
+
 
 
 
