@@ -225,8 +225,8 @@ function updateSummary(data) {
         "<td>" + simpleAvg.toFixed(3) + "</td>" +
         "<td>" + weightedAvg.toFixed(3) + "</td>" +
         "<td>" + totalTrade.toFixed(3) + "</td>" +
-        "<td>100%</td>" +
-        "<td>100%</td>" +
+        "<td></td>" +
+        "<td></td>" +
       "</tr>";
   }
 
@@ -254,6 +254,7 @@ document.getElementById("applyFilters").addEventListener("click", function() {
 // INITIALIZE DASHBOARD
 // ========================================================
 loadCSV();
+
 
 
 
