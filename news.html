@@ -70,7 +70,6 @@
       font-family: Georgia, serif;
     }
 
-    /* Each row is a 3-column grid so columns line up */
     .control-row,
     .date-row {
       display: grid;
@@ -93,7 +92,7 @@
     .control-block select,
     .control-block input[type="date"],
     .control-block button {
-      width: 170px;                 /* same width for all controls */
+      width: 170px;
       padding: 0.4rem 0.6rem;
       border: 1px solid #ccc;
       border-radius: 4px;
@@ -108,7 +107,6 @@
       background-color: #003366;
       color: white;
       font-weight: bold;
-      font-family: Georgia, serif;
       cursor: pointer;
       padding: 0.45rem 0.6rem;
     }
@@ -118,44 +116,42 @@
       color: #003366;
     }
 
-     /* ================================
-       CHECKBOX DROPDOWN (COLLAPSIBLE)
+    /* ================================
+       EXPORTER DROPDOWN ALIGNMENT FIX
        ================================ */
 
     .dropdown-container {
+      width: 170px; /* match select width */
       position: relative;
-      width: 220px;
+      display: flex;
+      flex-direction: column;
     }
 
-    /* Collapsed display bar */
     .dropdown-display {
+      width: 100%;
+      height: 34px;              /* match <select> height */
+      padding: 0.4rem 0.6rem;    /* match input padding */
       border: 1px solid #ccc;
-      padding: 4px 8px;
-      background: #fff;
       border-radius: 4px;
+      background: #fff;
       cursor: pointer;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      height: 28px;  /* ONE ROW */
-      overflow: hidden;
-      white-space: nowrap;
+      box-sizing: border-box;
+      font-size: 0.95rem;
     }
 
     .dropdown-display span {
       font-size: 0.95rem;
-      /*color: #003366;*/
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    .dropdown-arrow {
-      font-size: 0.95rem;
-      /*color: #003366;*/
-    }
-
-    /* Expandable checkbox list */
     .checkbox-panel {
       position: absolute;
-      top: 32px;
+      top: 36px;   /* align right below the box */
       left: 0;
       width: 100%;
       max-height: 180px;
@@ -164,24 +160,23 @@
       border-radius: 4px;
       overflow-y: auto;
       padding: 6px;
-      display: none;   /* hidden initially */
+      display: none;
       z-index: 10;
+      box-sizing: border-box;
     }
 
     .checkbox-panel label {
       display: block;
       margin-bottom: 4px;
+      cursor: pointer;
       font-weight: normal;
       color: #333;
-      cursor: pointer;
     }
 
-    /* Tables */
+    /* ===== TABLE STYLING ===== */
     table.dataTable {
       width: 100%;
       background: #fff;
-      font-size: 0.95rem;
-      font-family: Georgia, serif;
       border-collapse: collapse;
     }
 
@@ -232,6 +227,7 @@
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
 
 </head>
+
 <body>
 
 <!-- === NAVIGATION === -->
@@ -255,31 +251,29 @@
 
     <!-- ROW 1: Importer / Exporter / Product -->
     <div class="control-row">
+      
       <div class="control-block">
         <label>Importer:</label>
         <select id="importerSelect"></select>
       </div>
 
-      <!--<div class="control-block">
+      <!-- EXPORTER CHECKBOX DROPDOWN -->
+      <div class="control-block">
         <label>Exporter:</label>
-        <select id="exporterSelect"></select>
-      </div>-->
-      <!-- ⭐ NEW CHECKBOX DROPDOWN ⭐ -->
-    <div class="dropdown-container">
-      <div class="dropdown-display" id="exporterDisplay">
-        <span>Select exporters…</span>
-        <span class="dropdown-arrow">▼</span>
+        <div class="dropdown-container">
+          <div class="dropdown-display" id="exporterDisplay">
+            <span>Select exporters…</span>
+            <span class="dropdown-arrow">▼</span>
+          </div>
+          <div id="exporterBox" class="checkbox-panel"></div>
+        </div>
       </div>
 
-      <div id="exporterBox" class="checkbox-panel">
-        <!-- dashboard.js will populate -->
-      </div>
-    </div>
-
-    <div class="control-block">
+      <div class="control-block">
         <label>Product Code:</label>
         <select id="productSelect"></select>
-    </div>
+      </div>
+
     </div>
 
     <!-- ROW 2: From / To / Apply Filters -->
@@ -299,6 +293,7 @@
         <button id="applyFilters">Apply Filters</button>
       </div>
     </div>
+
   </div>
 
   <!-- === CHART === -->
@@ -324,6 +319,7 @@
       <tbody></tbody>
     </table>
   </section>
+
 </div>
 
 <footer>
