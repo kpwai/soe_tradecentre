@@ -241,7 +241,7 @@ function drawChart(data, exporters, worldMode) {
     });
 
     var layout = {
-      title: "Tariff Trend",
+      title: "Tariff Trend – World",
       xaxis: {
         title: "Date",
         type: "date",
@@ -302,7 +302,7 @@ function drawChart(data, exporters, worldMode) {
   });
 
   var layout = {
-    title: "Exporter Comparison",
+    title: "Tariff Trends – Selected Exporters",
     xaxis: {
       title: "Date",
       type: "date",
@@ -419,3 +419,4 @@ document.addEventListener("click", function(e) {
 // INITIALIZE DASHBOARD
 // ========================================================
 loadCSV();
+
