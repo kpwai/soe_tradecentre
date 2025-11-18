@@ -251,7 +251,7 @@ function drawChart(data, exporters, worldMode) {
         tickangle: -45
       },
       yaxis: { title: "Tariff (%)" },
-      font: { family: "Georgia, serif", size: 14 },
+      font: { family: "Georgia, serif", size: 12 },
       plot_bgcolor: "#fff",
       paper_bgcolor: "#fff",
       showlegend: false
@@ -312,7 +312,7 @@ function drawChart(data, exporters, worldMode) {
       tickangle: -45
     },
     yaxis: { title: "Tariff (%)" },
-    font: { family: "Georgia, serif", size: 14 },
+    font: { family: "Georgia, serif", size: 12 },
     plot_bgcolor: "#fff",
     paper_bgcolor: "#fff",
     showlegend: true
@@ -419,4 +419,5 @@ document.addEventListener("click", function(e) {
 // INITIALIZE DASHBOARD
 // ========================================================
 loadCSV();
+
 
