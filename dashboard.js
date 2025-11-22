@@ -509,7 +509,7 @@ function drawChart(data, exporters, worldMode, classification, codeTitle) {
       }
     });
 
-    traces.push({ x, y, mode: "lines+markers", name: exp, line: { shape: "hv", width: 3 }, marker: { size: 8 } });
+    traces.push({ x, y, mode: "lines+markers", name: exp, line: { shape: "hv", width: 3, color: "#003366" }, marker: { size: 8, color: "#003366" } });
   });
 
   const layout = {
@@ -711,3 +711,4 @@ function weightedSharePercent(shares, tv) {
   return den ? (num / den) * 100 : 0;
 }
 function toFixedSafe(v, d) { const n = Number(v); return Number.isFinite(n) ? n.toFixed(d) : (0).toFixed(d); }
+
