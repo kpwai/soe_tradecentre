@@ -35,11 +35,7 @@
       transition: background-color 0.3s, color 0.3s;
     }
 
-    nav a:hover {
-      background-color: #ffcc00;
-      color: #003366;
-    }
-
+    nav a:hover,
     nav a.active {
       background-color: #ffcc00;
       color: #003366;
@@ -52,63 +48,53 @@
       padding: 2rem;
       background: #fff;
       border-radius: 8px;
-      font-family: Georgia, serif;
       box-shadow: 0 0 8px rgba(0,0,0,0.1);
     }
 
     h1, h2, h3 {
       color: #003366;
-    }
-
-    /* === FILTER CONTROLS === */
-    #controls {
-      width: 100%;
-      margin-bottom: 1.8rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
       font-family: Georgia, serif;
     }
 
-    .control-row,
-    .date-row {
+    /* === FILTER CONTROLS (2 Columns) === */
+    #controls {
       display: grid;
-      grid-template-columns: repeat(3, auto);
-      column-gap: 2rem;
-      align-items: flex-start;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
     }
 
     .control-block {
       display: flex;
       flex-direction: column;
-      align-items: flex-start;
+      margin-bottom: 0.8rem;
     }
 
     .control-block label {
       font-weight: bold;
+      font-family: Georgia, serif;
       margin-bottom: 0.25rem;
     }
 
     .control-block select,
     .control-block input[type="date"],
     .control-block button {
-      width: 200px;
+      width: 230px;
       padding: 0.4rem 0.6rem;
       border: 1px solid #ccc;
       border-radius: 4px;
-      font-family: Georgia, serif;
       font-size: 0.95rem;
+      font-family: Georgia, serif;
       box-sizing: border-box;
     }
 
-    /* Button specific styling */
     #applyFilters {
-      border: none;
       background-color: #003366;
       color: white;
       font-weight: bold;
+      font-family: Georgia, serif;
       cursor: pointer;
-      padding: 0.45rem 0.6rem;
+      border: none;
     }
 
     #applyFilters:hover {
@@ -116,121 +102,106 @@
       color: #003366;
     }
 
-    /* ================================
-       EXPORTER DROPDOWN ALIGNMENT FIX
-       ================================ */
-
+    /* Exporter dropdown */
     .dropdown-container {
-      width: 200px; /* match select width */
+      width: 230px;
       position: relative;
       display: flex;
       flex-direction: column;
+      font-family: Georgia, serif;
     }
 
     .dropdown-display {
       width: 100%;
-      height: 34px;              /* match <select> height */
-      padding: 0.4rem 0.6rem;    /* match input padding */
+      padding: 0.4rem 0.6rem;
       border: 1px solid #ccc;
       border-radius: 4px;
       background: #fff;
       cursor: pointer;
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      box-sizing: border-box;
-      font-size: 0.95rem;
-    }
-
-    .dropdown-display span {
-      font-size: 0.95rem;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      font-family: Georgia, serif;
     }
 
     .checkbox-panel {
       position: absolute;
-      top: 36px;   /* align right below the box */
-      left: 0;
+      top: 36px;
       width: 100%;
       max-height: 180px;
-      background: #fff;
       border: 1px solid #ccc;
-      border-radius: 4px;
+      background: white;
+      display: none;
+      font-family: Georgia, serif;
       overflow-y: auto;
       padding: 6px;
-      display: none;
       z-index: 10;
-      box-sizing: border-box;
+      left: 0;
+      text-align: left;
     }
 
+    /* One country per line in the dropdown */
     .checkbox-panel label {
-      display: block;
-      margin-bottom: 4px;
+      display: block;          /* force a new line for each option */
+      padding: 4px 0;
       cursor: pointer;
-      font-weight: normal;
-      color: #333;
+      line-height: 1.25;
+      text-align: left;
+      white-space: normal;     /* wrap long country names */
+      word-break: break-word;
     }
 
-    /* ===== TABLE STYLING ===== */
-    table.dataTable {
+  .checkbox-panel label input[type="checkbox"] {
+    margin-right: 8px;       /* space between box and text */
+    vertical-align: middle;  /* align with text baseline */
+  }
+
+    table.summaryTable {
       width: 100%;
-      background: #fff;
       border-collapse: collapse;
+      margin-top: 1rem;
+      background: #fff;
+      font-family: Georgia, serif;
     }
 
-    table.dataTable thead {
+    table.summaryTable th,
+    table.summaryTable td {
+      border: 1px solid #ddd;
+      padding: 6px;
+      text-align: center;
+      font-family: Georgia, serif;
+    }
+
+    table.summaryTable thead {
       background-color: #003366;
       color: white;
+      font-family: Georgia, serif;
     }
 
-    table.dataTable th,
-    table.dataTable td {
-      padding: 0.6rem;
-      text-align: center;
-      border: 1px solid #ddd;
-    }
-
-    #summary {
+    #summarySection {
       background: #f8f9fa;
       padding: 1rem;
+      border: 1px solid #ccc;
       border-radius: 6px;
-      border: 1px solid #ddd;
       margin-top: 2rem;
+      font-family: Georgia, serif;
     }
 
-    #summary-title {
-      font-style: italic;
-      color: #444;
-      margin-bottom: 0.6rem;
-    }
-
-    footer {
-      margin-top: 3rem;
+    #eoSection {
+      margin-top: 2rem;
       padding: 1rem;
-      background-color: #003366;
-      color: white;
-      text-align: center;
-    }
-
-    @media (max-width: 768px) {
-      .control-row,
-      .date-row {
-        grid-template-columns: 1fr;
-        row-gap: 0.75rem;
-      }
+      background: #eef2f7;
+      font-family: Georgia, serif;
+      border-left: 5px solid #003366;
     }
   </style>
 
   <!-- DataTables CSS -->
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
 </head>
 
 <body>
 
-<!-- === NAVIGATION === -->
+<!-- NAVIGATION -->
 <nav>
   <a href="index.html">Home</a>
   <a href="about.html">About</a>
@@ -244,48 +215,72 @@
 
 <div class="container">
   <h1>Trade Model (CP) Equilibrium Dashboard</h1>
-  <h2>Tariff Actions</h2>
 
-  <!-- === FILTER CONTROL AREA === -->
+  <!-- === FILTER CONTROLS === -->
   <div id="controls">
 
-    <!-- ROW 1: Importer / Exporter / Product -->
-    <div class="control-row">
-      
+    <!-- ================= FIRST COLUMN ================= -->
+    <div>
       <div class="control-block">
         <label>Importer:</label>
-        <select id="importerSelect"></select>
+        <select id="importerSelect">
+          <option value="">-- Select Importer --</option>
+          <option value="World">World (All Importers)</option>
+          <option value="Cambodia">Cambodia</option>
+          <option value="Canada">Canada</option>
+          <option value="China">China</option>
+          <option value="India">India</option>
+          <option value="United Kingdom">United Kingdom</option>
+          <option value="United States">United States</option>
+          <option value="Zimbabwe">Zimbabwe</option>
+        </select>
       </div>
 
-      <!-- EXPORTER CHECKBOX DROPDOWN -->
       <div class="control-block">
         <label>Exporter:</label>
         <div class="dropdown-container">
           <div class="dropdown-display" id="exporterDisplay">
-            <span>Select exporters…</span>
-            <span class="dropdown-arrow">▼</span>
+            <span id="exporterDisplayText">Select Importer First</span>
+            <span>▼</span>
           </div>
           <div id="exporterBox" class="checkbox-panel"></div>
         </div>
       </div>
 
       <div class="control-block">
-        <label>Product Code:</label>
-        <select id="productSelect"></select>
-      </div>
-
-    </div>
-
-    <!-- ROW 2: From / To / Apply Filters -->
-    <div class="date-row">
-      <div class="control-block">
         <label>From:</label>
-        <input type="date" id="dateFrom">
+        <input type="date" id="dateFrom" />
       </div>
 
       <div class="control-block">
         <label>To:</label>
-        <input type="date" id="dateTo">
+        <input type="date" id="dateTo" />
+      </div>
+    </div>
+
+    <!-- ================= SECOND COLUMN ================= -->
+    <div>
+      <div class="control-block">
+        <label>Classification:</label>
+        <select id="classSelect">
+          <option value="">-- Select Classification --</option>
+          <option value="isic">ISIC4 2-Digits</option>
+          <option value="hs6">HS 6-Digits</option>
+        </select>
+      </div>
+
+      <div class="control-block">
+        <label>ISIC4 2-Digits:</label>
+        <select id="isicSelect" disabled>
+          <option value="">All</option>
+        </select>
+      </div>
+
+      <div class="control-block">
+        <label>HS 6-Digits:</label>
+        <select id="hs6Select" disabled>
+          <option value="">All</option>
+        </select>
       </div>
 
       <div class="control-block">
@@ -296,22 +291,37 @@
 
   </div>
 
-  <!-- === CHART === -->
-  <div id="tariffChart" style="margin-top:2rem;"></div>
+  <!-- === MAIN CHART === -->
+  <h2>Tariff Actions</h2>
+  <div id="tariffChartMain" style="margin-top:1rem;"></div>
 
-  <!-- === SUMMARY TABLE === -->
-  <section id="summary">
-    <h3>Details</h3>
-    <p id="summary-title"></p>
+  <!-- === SUMMARY SECTION === -->
+  <section id="summarySection">
+    <h3>Summary</h3>
 
-    <table id="summaryTable" class="display">
+    <table id="summaryTableISIC" class="summaryTable" style="display:none;">
       <thead>
         <tr>
           <th>Partner</th>
-          <th>Date (MM/DD/YYYY)</th>
+          <th>Date</th>
           <th>Simple Avg Tariff</th>
           <th>Weighted Avg Tariff</th>
-          <th>Affected Trade (USD)</th>
+          <th>Affected Trade (1000 USD)</th>
+          <th>Affected Trade Share</th>
+          <th>Affected Tariff Line Share</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <table id="summaryTableHS6" class="summaryTable" style="display:none;">
+      <thead>
+        <tr>
+          <th>Partner</th>
+          <th>Date</th>
+          <th>Simple Avg Tariff</th>
+          <th>Weighted Avg Tariff</th>
+          <th>Affected Trade (1000 USD)</th>
           <th>Affected Trade Share</th>
           <th>Affected Tariff Line Share</th>
         </tr>
@@ -320,19 +330,24 @@
     </table>
   </section>
 
+  <!-- === Executive Orders === -->
+  <section id="eoSection">
+    <h3>Executive Order (EO) Documentation</h3>
+    <div id="eoContent">No data yet.</div>
+  </section>
+
 </div>
 
 <footer>
   © 2026 SMU Centre for Research on International Trade
 </footer>
 
-<!-- Dependencies -->
-<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<!-- JS Libraries -->
+<script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
-<!-- Dashboard Script -->
 <script src="dashboard.js"></script>
 
 </body>
