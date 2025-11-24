@@ -467,7 +467,7 @@ function drawChart(data, exporters, worldMode, classification, codeTitle) {
       allValues.push(avgVal);
     });
 
-    traces.push({ x: allDates, y: allValues, mode: "lines+markers", name: "World", line: { shape: "hv", width: 3 }, marker: { size: 8 } });
+    traces.push({ x: allDates, y: allValues, mode: "lines+markers", name: "World", line: { shape: "hv", width: 3, color: "#003366" }, marker: { size: 8, color: "#003366" } });
 
     const layout = {
       title: chartTitle,
@@ -711,4 +711,5 @@ function weightedSharePercent(shares, tv) {
   return den ? (num / den) * 100 : 0;
 }
 function toFixedSafe(v, d) { const n = Number(v); return Number.isFinite(n) ? n.toFixed(d) : (0).toFixed(d); }
+
 
