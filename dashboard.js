@@ -676,13 +676,20 @@ function updateEO(mode, data, importer, exporters, isicC, hs6C, from, to) {
   }
 
   const eoCount = data.filter((x) => x.affectedTv > 0).length;
-
+/*
   div.innerHTML = `
     <p><strong>Importer:</strong> ${importer}</p>
     <p><strong>Exporter:</strong> ${expTxt}</p>
     <p><strong>Classification:</strong> ${clsTxt}</p>
     <p><strong>Date Range:</strong> ${dt}</p>
     <p><strong>EO-related actions:</strong> ${eoCount}</p>
+  `;
+}*/
+  div.innerHTML = `
+    <p><strong>Importer:</strong> ${importer}</p>
+    <p><strong>Exporter:</strong> ${expTxt}</p>
+    <p><strong>Classification:</strong> ${clsTxt}</p>
+    <p><strong>Date Range:</strong> ${dt}</p>
   `;
 }
 
@@ -711,5 +718,6 @@ function weightedSharePercent(shares, tv) {
   return den ? (num / den) * 100 : 0;
 }
 function toFixedSafe(v, d) { const n = Number(v); return Number.isFinite(n) ? n.toFixed(d) : (0).toFixed(d); }
+
 
 
