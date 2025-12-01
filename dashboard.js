@@ -586,7 +586,10 @@ function drawChart(data, exporters, worldMode, classification, codeTitle) {
 
 // =============================================================
 // Trade Affected — BAR CHART by partner on selected date
-// (this is now the ONLY Trade Affected visualization)
+//
+// =============================================================
+// =============================================================
+// Trade Affected — BAR CHART (NO SORTING, NO AGGREGATION)
 // =============================================================
 function drawTradeAffectedBars(country, dateObj) {
   const container = document.getElementById("tradeAffectedChart");
@@ -597,7 +600,7 @@ function drawTradeAffectedBars(country, dateObj) {
     return;
   }
 
-  // Fallback to latest date if none provided
+  // Determine target date
   let targetDate = dateObj;
   if (!targetDate) {
     let maxTs = -Infinity, maxD = null;
@@ -609,27 +612,25 @@ function drawTradeAffectedBars(country, dateObj) {
     });
     targetDate = maxD;
   }
-
   if (!targetDate) {
-    Plotly.newPlot(container, [], { title: "No valid dates in dataset" });
+    Plotly.newPlot(container, [], { title: "No valid dates" });
     return;
   }
 
   const ymd = toYMD(targetDate);
 
-  // 1️⃣ Filter rows by date and country
-  let rows = tradeAffectedData.filter(r => {
+  // Filter EXACT rows (NO SORT, NO AGGREGATION)
+  const rows = tradeAffectedData.filter(r => {
     const rDate = (r.date instanceof Date && !isNaN(r.date))
       ? toYMD(r.date)
       : toYMD(parseDateSafe(r.dateRaw));
 
-    const sameDay = rDate === ymd;
     const matchCountry =
       !country || country === "" || country === "All"
-        ? true
+        ? (r.country === "All")
         : (r.country === country);
 
-    return sameDay && matchCountry;
+    return rDate === ymd && matchCountry;
   });
 
   if (!rows.length) {
@@ -637,29 +638,22 @@ function drawTradeAffectedBars(country, dateObj) {
     return;
   }
 
-  // 2️⃣ NO AGGREGATION NEEDED
-  //    Your data already has exactly 1 row per partner_country.
-  //    Just sort them:
-  rows.sort((a,b) => a.rel_import_change - b.rel_import_change);
-
-  // 3️⃣ Prepare plot arrays
+  // KEEP CSV ORDER
   const xCats = rows.map(r => r.partner_country);
   const yVals = rows.map(r => r.rel_import_change);
 
   const titleCountry = country && country.length ? country : "All";
   const titleDate = ymd || "N/A";
 
-  const trace = {
+  Plotly.newPlot(container, [{
     x: xCats,
     y: yVals,
     type: "bar",
     marker: { color: "#003366" }
-  };
-
-  Plotly.newPlot(container, [trace], {
-    title: `Relative Import Change by Partner — ${titleCountry} (${titleDate})`,
+  }], {
+    title: `Relative Import Change — ${titleCountry} (${titleDate})`,
     xaxis: { title: "Partner Country", automargin: true, tickangle: -45 },
-    yaxis: { title: "Relative Import Change", zeroline: true },
+    yaxis: { title: "Relative Import Change" },
     font: { family: "Georgia, serif", size: 12 },
     plot_bgcolor: "#fff",
     paper_bgcolor: "#fff",
@@ -667,7 +661,6 @@ function drawTradeAffectedBars(country, dateObj) {
     margin: { l: 60, r: 20, t: 60, b: 90 }
   });
 }
-
 // =============================================================
 // SUMMARY TABLES (7 cols)
 // =============================================================
@@ -1041,4 +1034,3 @@ function toFixedSafe(v, d) {
   const n = Number(v);
   return Number.isFinite(n) ? n.toFixed(d) : (0).toFixed(d);
 }
-
