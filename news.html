@@ -5,76 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tariff Dashboard | SMU CRIT</title>
 
-  <!-- === Global Page Styles === -->
   <style>
-    html, body {
-      font-family: Georgia, serif;
-      background-color: #f8f9fa;
-      margin: 0;
-      padding: 0;
-      color: #333;
-    }
+    html, body { font-family: Georgia, serif; background-color: #f8f9fa; margin: 0; padding: 0; color: #333; }
+    nav { background-color: #003366; display: flex; justify-content: center; flex-wrap: wrap; padding: 1rem 0; }
+    nav a { color: white; text-decoration: none; padding: 0.75rem 1.5rem; margin: 0 0.3rem; font-weight: bold; font-size: 1.1rem; border-radius: 4px 4px 0 0; transition: background-color 0.3s, color 0.3s; }
+    nav a:hover, nav a.active { background-color: #ffcc00; color: #003366; }
 
-    /* Navbar */
-    nav {
-      background-color: #003366;
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      padding: 1rem 0;
-    }
+    .container { max-width: 1100px; margin: 2rem auto; padding: 2rem; background: #fff; border-radius: 8px; box-shadow: 0 0 8px rgba(0,0,0,0.1); }
 
-    nav a {
-      color: white;
-      text-decoration: none;
-      padding: 0.75rem 1.5rem;
-      margin: 0 0.3rem;
-      font-weight: bold;
-      font-size: 1.1rem;
-      border-radius: 4px 4px 0 0;
-      transition: background-color 0.3s, color 0.3s;
-    }
+    h1, h2, h3 { color: #003366; font-family: Georgia, serif; }
 
-    nav a:hover,
-    nav a.active {
-      background-color: #ffcc00;
-      color: #003366;
-    }
+    #controls { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
 
-    /* Container */
-    .container {
-      max-width: 1100px;
-      margin: 2rem auto;
-      padding: 2rem;
-      background: #fff;
-      border-radius: 8px;
-      box-shadow: 0 0 8px rgba(0,0,0,0.1);
-    }
-
-    h1, h2, h3 {
-      color: #003366;
-      font-family: Georgia, serif;
-    }
-
-    /* === FILTER CONTROLS (2 Columns) === */
-    #controls {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.5rem;
-      margin-bottom: 2rem;
-    }
-
-    .control-block {
-      display: flex;
-      flex-direction: column;
-      margin-bottom: 0.8rem;
-    }
-
-    .control-block label {
-      font-weight: bold;
-      font-family: Georgia, serif;
-      margin-bottom: 0.25rem;
-    }
+    .control-block { display: flex; flex-direction: column; margin-bottom: 0.8rem; }
+    .control-block label { font-weight: bold; font-family: Georgia, serif; margin-bottom: 0.25rem; }
 
     .control-block select,
     .control-block input[type="date"],
@@ -88,120 +32,41 @@
       box-sizing: border-box;
     }
 
-    #applyFilters {
-      background-color: #003366;
-      color: white;
-      font-weight: bold;
-      font-family: Georgia, serif;
-      cursor: pointer;
-      border: none;
-    }
+    #applyFilters { background-color: #003366; color: white; font-weight: bold; cursor: pointer; border: none; }
+    #applyFilters:hover { background-color: #ffcc00; color: #003366; }
 
-    #applyFilters:hover {
-      background-color: #ffcc00;
-      color: #003366;
-    }
+    .dropdown-container { width: 230px; position: relative; display: flex; flex-direction: column; }
+    .dropdown-display { width: 100%; padding: 0.4rem 0.6rem; border: 1px solid #ccc; border-radius: 4px; background: #fff; cursor: pointer; display: flex; justify-content: space-between; }
+    .checkbox-panel { position: absolute; top: 36px; width: 100%; max-height: 180px; border: 1px solid #ccc; background: white; display: none; overflow-y: auto; padding: 6px; z-index: 10; left: 0; text-align: left; }
+    .checkbox-panel label { display: block; padding: 4px 0; cursor: pointer; line-height: 1.25; white-space: normal; word-break: break-word; }
+    .checkbox-panel label input[type="checkbox"] { margin-right: 8px; vertical-align: middle; }
 
-    /* Exporter dropdown */
-    .dropdown-container {
+    table.summaryTable { width: 100%; border-collapse: collapse; margin-top: 1rem; background: #fff; }
+    table.summaryTable th, table.summaryTable td { border: 1px solid #ddd; padding: 6px; text-align: center; }
+    table.summaryTable thead { background-color: #003366; color: white; }
+
+    #summarySection { background: #f8f9fa; padding: 1rem; border: 1px solid #ccc; border-radius: 6px; margin-top: 2rem; }
+    #eoSection { margin-top: 2rem; padding: 1rem; background: #eef2f7; border-left: 5px solid #003366; }
+
+    /* Trade Affected controls */
+    .ta-inline {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      margin-top: 0.5rem;
+      align-items: flex-end;
+    }
+    .ta-inline .control-block select,
+    .ta-inline .control-block input[type="date"] {
       width: 230px;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      font-family: Georgia, serif;
-    }
-
-    .dropdown-display {
-      width: 100%;
-      padding: 0.4rem 0.6rem;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      background: #fff;
-      cursor: pointer;
-      display: flex;
-      justify-content: space-between;
-      font-family: Georgia, serif;
-    }
-
-    .checkbox-panel {
-      position: absolute;
-      top: 36px;
-      width: 100%;
-      max-height: 180px;
-      border: 1px solid #ccc;
-      background: white;
-      display: none;
-      font-family: Georgia, serif;
-      overflow-y: auto;
-      padding: 6px;
-      z-index: 10;
-      left: 0;
-      text-align: left;
-    }
-
-    /* One country per line in the dropdown */
-    .checkbox-panel label {
-      display: block;          /* force a new line for each option */
-      padding: 4px 0;
-      cursor: pointer;
-      line-height: 1.25;
-      text-align: left;
-      white-space: normal;     /* wrap long country names */
-      word-break: break-word;
-    }
-
-  .checkbox-panel label input[type="checkbox"] {
-    margin-right: 8px;       /* space between box and text */
-    vertical-align: middle;  /* align with text baseline */
-  }
-
-    table.summaryTable {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 1rem;
-      background: #fff;
-      font-family: Georgia, serif;
-    }
-
-    table.summaryTable th,
-    table.summaryTable td {
-      border: 1px solid #ddd;
-      padding: 6px;
-      text-align: center;
-      font-family: Georgia, serif;
-    }
-
-    table.summaryTable thead {
-      background-color: #003366;
-      color: white;
-      font-family: Georgia, serif;
-    }
-
-    #summarySection {
-      background: #f8f9fa;
-      padding: 1rem;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      margin-top: 2rem;
-      font-family: Georgia, serif;
-    }
-
-    #eoSection {
-      margin-top: 2rem;
-      padding: 1rem;
-      background: #eef2f7;
-      font-family: Georgia, serif;
-      border-left: 5px solid #003366;
     }
   </style>
 
-  <!-- DataTables CSS -->
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
 </head>
 
 <body>
 
-<!-- NAVIGATION -->
 <nav>
   <a href="index.html">Home</a>
   <a href="about.html">About</a>
@@ -216,10 +81,8 @@
 <div class="container">
   <h1>Tariff Tracker and Trade Simulations</h1>
 
-  <!-- === FILTER CONTROLS === -->
+  <!-- ================= FILTER CONTROLS ================= -->
   <div id="controls">
-
-    <!-- ================= FIRST COLUMN ================= -->
     <div>
       <div class="control-block">
         <label>Importer:</label>
@@ -258,7 +121,6 @@
       </div>
     </div>
 
-    <!-- ================= SECOND COLUMN ================= -->
     <div>
       <div class="control-block">
         <label>Classification:</label>
@@ -271,16 +133,12 @@
 
       <div class="control-block">
         <label>ISIC4 2-Digits:</label>
-        <select id="isicSelect" disabled>
-          <option value="">All</option>
-        </select>
+        <select id="isicSelect" disabled><option value="">All</option></select>
       </div>
 
       <div class="control-block">
         <label>HS 6-Digits:</label>
-        <select id="hs6Select" disabled>
-          <option value="">All</option>
-        </select>
+        <select id="hs6Select" disabled><option value="">All</option></select>
       </div>
 
       <div class="control-block">
@@ -288,14 +146,33 @@
         <button id="applyFilters">Apply Filters</button>
       </div>
     </div>
-
   </div>
 
-  <!-- === MAIN CHART === -->
+  <!-- ================= MAIN CHART ================= -->
   <h2>Trade Model (CP) Equilibrium</h2>
+  <h2 style="margin-top:2rem;">Tariff Action</h2>
   <div id="tariffChartMain" style="margin-top:1rem;"></div>
 
-  <!-- === SUMMARY SECTION === -->
+  <!-- ================= TRADE AFFECTED ================= -->
+  <h2 style="margin-top:2rem;">Trade Affected</h2>
+
+  <div class="ta-inline">
+    <div class="control-block">
+      <label for="tradeAffectedCountry">Country</label>
+      <select id="tradeAffectedCountry">
+        <option value="">All</option>
+      </select>
+    </div>
+
+    <div class="control-block">
+      <label for="tradeAffectedDate">Date</label>
+      <input type="date" id="tradeAffectedDate" />
+    </div>
+  </div>
+
+  <div id="tradeAffectedChart" style="margin-top:1rem;"></div>
+
+  <!-- ================= SUMMARY TABLES ================= -->
   <section id="summarySection">
     <h3>Summary</h3>
 
@@ -330,25 +207,23 @@
     </table>
   </section>
 
-  <!-- === Executive Orders === -->
+  <!-- ================= EXECUTIVE ORDERS ================= -->
   <section id="eoSection">
     <h3>Executive Order (EO) Documentation</h3>
     <div id="eoContent">No data yet.</div>
   </section>
 
-</div>
+</div> <!-- END container -->
 
 <footer>
   © 2026 SMU Centre for Research on International Trade
 </footer>
 
-<!-- JS Libraries -->
 <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
 <script src="dashboard.js"></script>
-
 </body>
 </html>
