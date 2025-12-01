@@ -658,7 +658,7 @@ function drawTradeAffectedBars(country, dateObj) {
 
   Plotly.newPlot(container, [trace], {
     title: `Relative Import Change by Partner — ${titleCountry} (${titleDate})`,
-    xaxis: { title: "Partner Country (ISO3)", automargin: true, tickangle: -45 },
+    xaxis: { title: "Partner Country", automargin: true, tickangle: -45 },
     yaxis: { title: "Relative Import Change", zeroline: true },
     font: { family: "Georgia, serif", size: 12 },
     plot_bgcolor: "#fff",
@@ -1041,3 +1041,4 @@ function toFixedSafe(v, d) {
   const n = Number(v);
   return Number.isFinite(n) ? n.toFixed(d) : (0).toFixed(d);
 }
+
