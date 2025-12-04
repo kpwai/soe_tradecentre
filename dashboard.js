@@ -14,7 +14,7 @@ const HS6_CODES_PATH      = "data/hs6code.csv";
 const ISIC_TARIFF_PATH    = "data/isic42dtariffnew.csv";
 const HS6_TARIFF_PATH     = "data/hs6tariffsnew.csv";
 const EO_LINKS_PATH       = "data/eo_links.csv";
-const TRADE_AFFECTED_PATH = "data/trade_affected.csv"; // Trade affected CSV
+const TRADE_AFFECTED_PATH = "data/trade_effect_updated.csv"; 
 
 // =============================================================
 // Globals
@@ -367,7 +367,7 @@ function loadTradeAffected(callback) {
 // =============================================================
 // Populate Trade Affected controls
 // =============================================================
-function populateTradeAffectedCountries() {
+/*function populateTradeAffectedCountries() {
   const sel = document.getElementById("tradeAffectedCountry");
   if (!sel || !tradeAffectedLoaded) return;
 
@@ -381,6 +381,43 @@ function populateTradeAffectedCountries() {
   sel.innerHTML = "";
   if (!arr.includes("All")) arr.unshift("All");
 
+  arr.forEach(c => {
+    const opt = document.createElement("option");
+    opt.value = c;
+    opt.textContent = c;
+    sel.appendChild(opt);
+  });
+}*/
+function populateTradeAffectedCountries() {
+  const sel = document.getElementById("tradeAffectedCountry");
+  if (!sel || !tradeAffectedLoaded) return;
+
+  const set = new Set();
+  (tradeAffectedData || []).forEach(r => {
+    const c = (r.country || "").trim();
+    if (c) set.add(c);
+  });
+
+  let arr = Array.from(set).sort((a, b) => a.localeCompare(b));
+
+  // Ensure "All" is first
+  if (!arr.includes("All")) arr.unshift("All");
+  else {
+    // Move "All" to front if it's somewhere else
+    arr = ["All", ...arr.filter(x => x !== "All")];
+  }
+
+  // === NEW: Always put USA at position 2 (after All) ===
+  if (arr.includes("United States(USA)")) {
+    arr = [
+      "All",
+      "United States(USA)",
+      ...arr.filter(x => x !== "All" && x !== "United States(USA)")
+    ];
+  }
+
+  // Populate dropdown
+  sel.innerHTML = "";
   arr.forEach(c => {
     const opt = document.createElement("option");
     opt.value = c;
@@ -501,8 +538,8 @@ function drawChart(data, exporters, worldMode, classification, codeTitle) {
       y: allValues,
       mode: "lines+markers",
       name: "World",
-      line: { shape: "hv", width: 3, color: "#003366" },
-      marker: { size: 8, color: "#003366" }
+      line: { shape: "hv", width: 3, color: "#00747C" },
+      marker: { size: 8, color: "#00747C" }
     });
 
     Plotly.newPlot(chartDiv, traces, {
@@ -561,8 +598,8 @@ function drawChart(data, exporters, worldMode, classification, codeTitle) {
       y,
       mode: "lines+markers",
       name: exp,
-      line: { shape: "hv", width: 3, color: "#003366" },
-      marker: { size: 8, color: "#003366" }
+      line: { shape: "hv", width: 3, color: "#00747C" },
+      marker: { size: 8, color: "#00747C" }
     });
   });
 
@@ -649,11 +686,11 @@ function drawTradeAffectedBars(country, dateObj) {
     x: xCats,
     y: yVals,
     type: "bar",
-    marker: { color: "#003366" }
+    marker: { color: "#00747C" }
   }], {
-    title: `Relative Import Change — ${titleCountry} (${titleDate})`,
-    xaxis: { title: "Partner Country", automargin: true, tickangle: -45 },
-    yaxis: { title: "Relative Import Change" },
+    title: `Changes in Imports Value — ${titleCountry} (${titleDate})`,
+    xaxis: { title: "Country Origin", automargin: true, tickangle: -45 },
+    yaxis: { title: "Changes in Imports Value" },
     font: { family: "Georgia, serif", size: 12 },
     plot_bgcolor: "#fff",
     paper_bgcolor: "#fff",
