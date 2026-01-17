@@ -41,10 +41,11 @@
     padding: 0 1rem;
   }
 
-  /* LEFT NAV */
+  /* LEFT TABS (conference only) */
   .tabs {
     width: 260px;
     border-right: 1px solid #ddd;
+    display: none;
   }
   .tabs button {
     width: 100%;
@@ -93,6 +94,16 @@
   ul {
     margin-left: 1.2rem;
   }
+
+  a.conf-link {
+    font-size: 18px;
+    font-weight: bold;
+    color: #003366;
+    text-decoration: none;
+  }
+  a.conf-link:hover {
+    text-decoration: underline;
+  }
 </style>
 </head>
 
@@ -111,53 +122,47 @@
 
 <div class="container">
 
-  <!-- LEVEL 1: SERIES MENU -->
-  <div class="tabs" id="series-tabs">
-    <button class="tab-link active" data-tab="series-home">
-      SMU Annual Trade Conference
-    </button>
-    <button class="tab-link" data-tab="conf2026-home">
-      2026 SMU Annual Trade Conference
-    </button>
-  </div>
-
-  <!-- LEVEL 2: 2026 MENU -->
-  <div class="tabs" id="conf2026-tabs" style="display:none;">
-    <button class="tab-link active" data-tab="conf2026-home">Home</button>
-    <button class="tab-link" data-tab="conf2026-submissions">Submissions</button>
-    <button class="tab-link" data-tab="conf2026-programme">Programme</button>
-    <button class="tab-link" data-tab="conf2026-registration">Registration</button>
-    <button class="tab-link" data-tab="conf2026-getting-here">Getting Here</button>
-    <button class="tab-link" data-tab="conf2026-hotel">Hotel Accommodation</button>
-    <button class="tab-link" data-tab="conf2026-photos">Photos</button>
+  <!-- LEFT TABS (hidden by default) -->
+  <div class="tabs" id="conf-tabs">
+    <button class="tab-link active" data-tab="conf-home">Home</button>
+    <button class="tab-link" data-tab="conf-submissions">Submissions</button>
+    <button class="tab-link" data-tab="conf-programme">Programme</button>
+    <button class="tab-link" data-tab="conf-registration">Registration</button>
+    <button class="tab-link" data-tab="conf-getting-here">Getting Here</button>
+    <button class="tab-link" data-tab="conf-hotel">Hotel Accommodation</button>
+    <button class="tab-link" data-tab="conf-photos">Photos</button>
   </div>
 
   <!-- RIGHT CONTENT -->
   <div class="tab-content">
 
-    <!-- SERIES COVER -->
-    <div id="series-home" class="tab-pane active">
+    <!-- MAIN LANDING PAGE -->
+    <div id="main-landing" class="tab-pane active">
       <h1>SMU Annual Trade Conference</h1>
+
       <p>
-        The SMU Annual Trade Conference is the flagship event of the
-        SMU Centre for Research on International Trade, bringing together
-        leading scholars and policymakers in international economics.
+        The SMU Annual Trade Conference is the flagship annual event organised by
+        the SMU Centre for Research on International Trade. It brings together
+        leading scholars, policymakers, and practitioners in international economics.
       </p>
 
-      <h2>Conference Series</h2>
+      <h2>Upcoming Conference</h2>
+      <p>
+        <a href="#" id="open-2026" class="conf-link">
+          2026 SMU Annual Trade Conference
+        </a><br>
+        <strong>March 2026</strong> · Singapore Management University
+      </p>
+
+      <h2>Past Conferences</h2>
       <ul>
-        <li>2026 – Singapore</li>
         <li>2025 – Singapore</li>
         <li>2024 – Singapore</li>
       </ul>
-
-      <p>
-        Select a conference year on the left to view detailed information.
-      </p>
     </div>
 
-    <!-- 2026 HOME -->
-    <div id="conf2026-home" class="tab-pane">
+    <!-- 2026 CONFERENCE CONTENT -->
+    <div id="conf-home" class="tab-pane">
       <h1>2026 SMU Annual Trade Conference</h1>
       <p>
         The 2026 SMU Annual Trade Conference will be held at
@@ -169,7 +174,7 @@
       </p>
     </div>
 
-    <div id="conf2026-submissions" class="tab-pane">
+    <div id="conf-submissions" class="tab-pane">
       <h1>Paper Submissions</h1>
       <p>
         We invite submissions of original research papers in international trade
@@ -177,27 +182,27 @@
       </p>
     </div>
 
-    <div id="conf2026-programme" class="tab-pane">
+    <div id="conf-programme" class="tab-pane">
       <h1>Programme</h1>
       <p>Programme details will be announced.</p>
     </div>
 
-    <div id="conf2026-registration" class="tab-pane">
+    <div id="conf-registration" class="tab-pane">
       <h1>Registration</h1>
       <p>Registration is free but required.</p>
     </div>
 
-    <div id="conf2026-getting-here" class="tab-pane">
+    <div id="conf-getting-here" class="tab-pane">
       <h1>Getting Here</h1>
       <p>Directions to SMU campus.</p>
     </div>
 
-    <div id="conf2026-hotel" class="tab-pane">
+    <div id="conf-hotel" class="tab-pane">
       <h1>Hotel Accommodation</h1>
       <p>Recommended hotels near SMU will be listed here.</p>
     </div>
 
-    <div id="conf2026-photos" class="tab-pane">
+    <div id="conf-photos" class="tab-pane">
       <h1>Photos</h1>
       <p>Photos will be uploaded after the conference.</p>
     </div>
@@ -206,29 +211,32 @@
 </div>
 
 <script>
-  const allTabs = document.querySelectorAll(".tab-link");
+  const tabs = document.querySelectorAll(".tab-link");
   const panes = document.querySelectorAll(".tab-pane");
+  const confTabs = document.getElementById("conf-tabs");
+  const mainLanding = document.getElementById("main-landing");
+  const open2026 = document.getElementById("open-2026");
 
-  const seriesTabs = document.getElementById("series-tabs");
-  const confTabs = document.getElementById("conf2026-tabs");
+  open2026.addEventListener("click", (e) => {
+    e.preventDefault();
 
-  allTabs.forEach(tab => {
+    mainLanding.classList.remove("active");
+    confTabs.style.display = "block";
+
+    tabs.forEach(t => t.classList.remove("active"));
+    panes.forEach(p => p.classList.remove("active"));
+
+    document.querySelector('[data-tab="conf-home"]').classList.add("active");
+    document.getElementById("conf-home").classList.add("active");
+  });
+
+  tabs.forEach(tab => {
     tab.addEventListener("click", () => {
-
-      allTabs.forEach(t => t.classList.remove("active"));
+      tabs.forEach(t => t.classList.remove("active"));
       panes.forEach(p => p.classList.remove("active"));
 
       tab.classList.add("active");
       document.getElementById(tab.dataset.tab).classList.add("active");
-
-      // Switch left menu
-      if (tab.dataset.tab.startsWith("conf2026")) {
-        seriesTabs.style.display = "none";
-        confTabs.style.display = "block";
-      } else {
-        seriesTabs.style.display = "block";
-        confTabs.style.display = "none";
-      }
     });
   });
 </script>
