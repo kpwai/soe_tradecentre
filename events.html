@@ -1,76 +1,103 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Events | SMU Centre for Research on International Trade</title>
-  <style>
-    p {
-      font-family: Georgia, serif;
-      font-size: 18px;
-      line-height: 1.6;
-      /*max-width: 700px;*/
-      margin: 1.5rem auto;
-      color: #333333;
-    }
-    h1 {
-      font-family: Georgia, serif;
-      font-weight: bold;
-      color: #003366;
-      text-align: left;
-      margin: 1.5rem auto;
-    }
-     nav {
-      background-color: #003366;
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      padding: 1rem 0;
-      font-family: Georgia, serif;
-    }
-    nav a {
-      color: white;
-      text-decoration: none;
-      padding: 0.75rem 1.5rem;
-      margin: 0 0.3rem;
-      font-weight: bold;
-      font-size: 1.1rem;
-      border-radius: 4px 4px 0 0;
-      transition: background-color 0.3s, color 0.3s;
-    }
-    nav a:hover {
-      background-color: #ffcc00;
-      color: #003366;
-      text-decoration: none;
-    }
-    nav a.active {
-      background-color: #ffcc00;
-      color: #003366;
-    }
-    .container {
-      max-width: 900px;
-      margin: 2rem auto;
-      padding: 1rem;
-      background: #f8f9fa;
-      border-radius: 8px;
-      font-family: Arial, sans-serif;
-    }
-    ul {
-      list-style-type: none;
-      padding-left: 0;
-    }
-    li {
-      background: white;
-      margin-bottom: 0.75rem;
-      padding: 1rem;
-      border-radius: 6px;
-      box-shadow: 0 0 4px rgba(0,0,0,0.1);
-    }
-    li small {
-      color: #666;
-      font-size: 0.85rem;
-    }
-  </style>
+<meta charset="UTF-8" />
+<title>Events | SMU Centre for Research on International Trade</title>
+
+<style>
+  body {
+    margin: 0;
+    font-family: Georgia, serif;
+    color: #333;
+    background: #ffffff;
+  }
+
+  /* Top navigation */
+  nav {
+    background-color: #003366;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 1rem 0;
+  }
+  nav a {
+    color: white;
+    text-decoration: none;
+    padding: 0.75rem 1.5rem;
+    margin: 0 0.3rem;
+    font-weight: bold;
+    font-size: 1.1rem;
+  }
+  nav a.active,
+  nav a:hover {
+    background-color: #ffcc00;
+    color: #003366;
+  }
+
+  /* Main layout */
+  .container {
+    max-width: 1100px;
+    margin: 2rem auto;
+    display: flex;
+    gap: 2rem;
+    padding: 0 1rem;
+  }
+
+  /* Left tabs */
+  .tabs {
+    width: 260px;
+    border-right: 1px solid #ddd;
+  }
+  .tabs button {
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 0.9rem 1rem;
+    text-align: left;
+    font-size: 16px;
+    cursor: pointer;
+    color: #003366;
+    font-family: Georgia, serif;
+    border-left: 4px solid transparent;
+  }
+  .tabs button:hover {
+    background: #f2f2f2;
+  }
+  .tabs button.active {
+    font-weight: bold;
+    border-left: 4px solid #ffcc00;
+    background: #f8f9fa;
+  }
+
+  /* Right content */
+  .tab-content {
+    flex: 1;
+  }
+  .tab-pane {
+    display: none;
+  }
+  .tab-pane.active {
+    display: block;
+  }
+
+  h1 {
+    color: #003366;
+    margin-top: 0;
+  }
+  h2 {
+    color: #003366;
+    margin-top: 1.5rem;
+  }
+  p {
+    line-height: 1.6;
+    font-size: 17px;
+  }
+  ul {
+    margin-left: 1.2rem;
+  }
+</style>
 </head>
+
 <body>
 
 <nav>
@@ -85,19 +112,112 @@
 </nav>
 
 <div class="container">
-  <h1>Upcoming Events</h1>
-  <p>Upcoming events and activities will be updated on this page soon. Please check back regularly for the latest announcements and schedules.</p>
-  <!--<ul>
-    <li>
-      <strong>Economics Seminar</strong> <br />
-      <small>September 5, 2025</small>
-    </li>
-    <li>
-      <strong>Annual Conference</strong> <br />
-      <small>October 15, 2025</small>
-    </li>
-  </ul>-->
+
+  <!-- LEFT TABS -->
+  <div class="tabs">
+    <button class="tab-link active" data-tab="home">Home</button>
+    <button class="tab-link" data-tab="submissions">Submissions</button>
+    <button class="tab-link" data-tab="programme">Programme</button>
+    <button class="tab-link" data-tab="registration">Registration</button>
+    <button class="tab-link" data-tab="getting-here">Getting Here</button>
+    <button class="tab-link" data-tab="hotel">Hotel Accommodation</button>
+    <button class="tab-link" data-tab="past">Past Conferences</button>
+    <button class="tab-link" data-tab="photos">Photos</button>
+  </div>
+
+  <!-- RIGHT CONTENT -->
+  <div class="tab-content">
+
+    <div id="home" class="tab-pane active">
+      <h1>International Trade Conference 2025</h1>
+      <p>
+        The SMU Centre for Research on International Trade is pleased to host its
+        annual conference bringing together researchers, policymakers, and
+        practitioners in international trade.
+      </p>
+      <p>
+        Dates: <strong>12–13 March 2025</strong><br>
+        Venue: <strong>Singapore Management University</strong>
+      </p>
+    </div>
+
+    <div id="submissions" class="tab-pane">
+      <h1>Paper Submissions</h1>
+      <p>
+        We invite submissions of original research papers in international trade,
+        global value chains, and trade policy.
+      </p>
+      <ul>
+        <li>Submission deadline: 15 November 2024</li>
+        <li>Notification: 15 December 2024</li>
+      </ul>
+    </div>
+
+    <div id="programme" class="tab-pane">
+      <h1>Programme</h1>
+      <p>
+        The programme includes keynote lectures, paper sessions, and policy panels.
+      </p>
+      <p>Detailed programme will be announced soon.</p>
+    </div>
+
+    <div id="registration" class="tab-pane">
+      <h1>Registration</h1>
+      <p>
+        Registration is free but required.
+      </p>
+      <p>
+        Please register via the official registration link once available.
+      </p>
+    </div>
+
+    <div id="getting-here" class="tab-pane">
+      <h1>Getting Here</h1>
+      <p>
+        Singapore Management University is centrally located and easily accessible
+        via MRT and public transport.
+      </p>
+    </div>
+
+    <div id="hotel" class="tab-pane">
+      <h1>Hotel Accommodation</h1>
+      <p>
+        A list of recommended hotels near SMU will be provided for conference participants.
+      </p>
+    </div>
+
+    <div id="past" class="tab-pane">
+      <h1>Past Conferences</h1>
+      <ul>
+        <li>International Trade Conference 2024</li>
+        <li>Global Trade & Supply Chains Workshop 2023</li>
+      </ul>
+    </div>
+
+    <div id="photos" class="tab-pane">
+      <h1>Photos</h1>
+      <p>
+        Photos from the conference will be uploaded after the event.
+      </p>
+    </div>
+
+  </div>
 </div>
+
+<script>
+  const tabs = document.querySelectorAll(".tab-link");
+  const panes = document.querySelectorAll(".tab-pane");
+
+  tabs.forEach(tab => {
+    tab.addEventListener("click", () => {
+      tabs.forEach(t => t.classList.remove("active"));
+      panes.forEach(p => p.classList.remove("active"));
+
+      tab.classList.add("active");
+      document.getElementById(tab.dataset.tab).classList.add("active");
+    });
+  });
+</script>
 
 </body>
 </html>
