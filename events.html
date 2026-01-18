@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8" />
 <title>Events | SMU Centre for Research on International Trade</title>
-
 <style>
   body {
     margin: 0;
@@ -19,6 +18,7 @@
     flex-wrap: wrap;
     padding: 1rem 0;
   }
+
   nav a {
     color: white;
     text-decoration: none;
@@ -27,6 +27,7 @@
     font-weight: bold;
     font-size: 1.1rem;
   }
+
   nav a.active,
   nav a:hover {
     background-color: #ffcc00;
@@ -41,12 +42,13 @@
     padding: 0 1rem;
   }
 
-  /* LEFT TABS (conference only) */
+  /* LEFT TABS */
   .tabs {
     width: 260px;
     border-right: 1px solid #ddd;
     display: none;
   }
+
   .tabs button {
     width: 100%;
     background: none;
@@ -59,9 +61,11 @@
     font-family: Georgia, serif;
     border-left: 4px solid transparent;
   }
+
   .tabs button:hover {
     background: #f2f2f2;
   }
+
   .tabs button.active {
     font-weight: bold;
     border-left: 4px solid #ffcc00;
@@ -75,45 +79,52 @@
   .tab-pane {
     display: none;
   }
+
   .tab-pane.active {
     display: block;
   }
 
-  h1 {
+  h1, h2 {
     color: #003366;
+  }
+
+  h1 {
     margin-top: 0;
   }
+
   h2 {
-    color: #003366;
     margin-top: 1.5rem;
   }
+
   p {
     line-height: 1.6;
     font-size: 17px;
   }
+
   ul {
-  margin-left: 1.2rem;
-  list-style-type: none; /* <-- this removes the bullets */
-  padding-left: 0;       /* optional: removes extra indentation */
-}
-  a.conf-link {
+    margin-left: 1.2rem;
+    list-style-type: none;
+    padding-left: 0;
+  }
+
+  a.conf-link, a.workshop-link {
     font-size: 18px;
     font-weight: bold;
     color: #003366;
     text-decoration: none;
   }
-  a.conf-link:hover {
+
+  a.conf-link:hover, a.workshop-link:hover {
     text-decoration: underline;
   }
-  .map {
-      margin-top: 2rem;
-    }
-    iframe {
-      width: 100%;
-      height: 400px;
-      border: none;
-    }
-  <!-- CSS for cards -->
+
+  iframe {
+    width: 100%;
+    height: 400px;
+    border: none;
+  }
+
+  /* Cards layout */
   .columns-container {
     display: flex;
     flex-wrap: wrap;
@@ -122,7 +133,7 @@
   }
 
   .column {
-    flex: 1 1 45%; /* Each column takes roughly 45% of container */
+    flex: 1 1 45%;
   }
 
   .cards-container-vertical {
@@ -148,7 +159,6 @@
   .card h3 {
     margin-top: 0;
     font-size: 1.2rem;
-    color: #003366;
   }
 
   .card h3 a {
@@ -165,7 +175,6 @@
     font-size: 0.95rem;
   }
 
-  /* Responsive: stack columns on small screens */
   @media (max-width: 768px) {
     .columns-container {
       flex-direction: column;
@@ -176,7 +185,6 @@
   }
 </style>
 </head>
-
 <body>
 
 <nav>
@@ -192,7 +200,7 @@
 
 <div class="container">
 
-  <!-- LEFT TABS (hidden by default) -->
+  <!-- LEFT TABS -->
   <div class="tabs" id="conf-tabs">
     <button class="tab-link active" data-tab="conf-home">Home</button>
     <button class="tab-link" data-tab="conf-submissions">Submissions</button>
@@ -206,82 +214,68 @@
   <!-- RIGHT CONTENT -->
   <div class="tab-content">
 
-  <!-- MAIN LANDING PAGE -->
-<div id="main-landing" class="tab-pane active">
-  <h1>SMU Annual Trade Conference</h1>
+    <!-- MAIN LANDING PAGE -->
+    <div id="main-landing" class="tab-pane active">
+      <h1>SMU Annual Trade Conference</h1>
+      <p>The SMU Annual Trade Conference is the flagship annual event organised by the
+        <a href="https://economics.smu.edu.sg/soetrade" target="_blank" rel="noopener">SMU Centre for Research on International Trade</a>.
+        It brings together leading scholars, policymakers, and practitioners in international economics.</p>
 
-  <p>
-    The SMU Annual Trade Conference is the flagship annual event organised by
-    the <a href="https://economics.smu.edu.sg/soetrade" target="_blank" rel="noopener" class="inline-link">
-      SMU Centre for Research on International Trade
-    </a>.
-    It brings together leading scholars, policymakers, and practitioners in international economics.
-  </p>
+      <div class="columns-container">
+        <!-- LEFT COLUMN: Conferences -->
+        <div class="column">
+          <h2>Upcoming Conferences</h2>
+          <div class="cards-container-vertical">
+            <div class="card">
+              <h3><a href="#" class="conf-link">2026 SMU Annual Trade Conference</a></h3>
+              <p><strong>Date:</strong> May 2026</p>
+              <p><strong>Venue:</strong> Singapore Management University</p>
+            </div>
+            <div class="card">
+              <h3><a href="#" class="conf-link">2025 SMU Annual Trade Conference</a></h3>
+              <p><strong>Date:</strong> May 2025</p>
+              <p><strong>Venue:</strong> Singapore</p>
+            </div>
+          </div>
+        </div>
 
-  <!-- TWO-COLUMN LAYOUT -->
-  <div class="columns-container">
-    
-    <!-- LEFT COLUMN: Conferences -->
-    <div class="column">
-      <h2>Upcoming Conferences</h2>
-      <div class="cards-container-vertical">
-        <div class="card">
-          <h3><a href="#" class="conf-link">2026 SMU Annual Trade Conference</a></h3>
-          <p><strong>Date:</strong> May 2026</p>
-          <p><strong>Venue:</strong> Singapore Management University</p>
-        </div>
-        <div class="card">
-          <h3><a href="#" class="conf-link">2025 SMU Annual Trade Conference</a></h3>
-          <p><strong>Date:</strong> May 2025</p>
-          <p><strong>Venue:</strong> Singapore</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- RIGHT COLUMN: Trade Workshops -->
-    <div class="column">
-      <h2>Trade Workshops</h2>
-      <div class="cards-container-vertical">
-        <div class="card">
-          <h3><a href="#" class="workshop-link">2026 Workshop on Global Trade Policy</a></h3>
-          <p><strong>Date:</strong> June 2026</p>
-          <p><strong>Venue:</strong> Singapore</p>
-        </div>
-        <div class="card">
-          <h3><a href="#" class="workshop-link">2025 Workshop on Supply Chain & Trade</a></h3>
-          <p><strong>Date:</strong> July 2025</p>
-          <p><strong>Venue:</strong> Singapore</p>
+        <!-- RIGHT COLUMN: Workshops -->
+        <div class="column">
+          <h2>Trade Workshops</h2>
+          <div class="cards-container-vertical">
+            <div class="card">
+              <h3><a href="#" class="workshop-link">2026 Workshop on Global Trade Policy</a></h3>
+              <p><strong>Date:</strong> June 2026</p>
+              <p><strong>Venue:</strong> Singapore</p>
+            </div>
+            <div class="card">
+              <h3><a href="#" class="workshop-link">2025 Workshop on Supply Chain & Trade</a></h3>
+              <p><strong>Date:</strong> July 2025</p>
+              <p><strong>Venue:</strong> Singapore</p>
+            </div>
+          </div>
         </div>
       </div>
+
+      <p>For more details on each event, select the year or workshop on the left menu.</p>
     </div>
 
-  </div>
-
-  <p>
-    For more details on each event, select the year or workshop on the left menu.
-  </p>
-</div>
-    
-    <!-- 2026 CONFERENCE CONTENT -->
+    <!-- 2026 Conference Content -->
     <div id="conf-home" class="tab-pane">
       <h1>2026 SMU Annual Trade Conference</h1>
       <h2>Dear Colleagues:</h2>
-      <p>
-        The 2026 SMU Annual Trade Conference will take place on May 25–26, 2026, for two full days at Singapore Management University (SMU). The conference is organized by the 
-        <a class="inline-link" href="https://economics.smu.edu.sg/soetrade" target="_blank" rel="noopener">SMU Centre for Research on International Trade</a>, which promotes research analyzing the complex networks of firm-to-firm connections in Singapore and other Asian economies.  
-      </p>
-      <p> 
-        We invite submissions of high-quality papers in fields including, but not limited to, <strong>international trade, network economics, spatial econometrics,</strong> and <strong>labor economics</strong>. In particular, we welcome papers that examine the role of firm-to-firm input-output linkages in transmitting aggregate shocks and their implications for the firm-level productivity, labor demand, and innovation activities.  
-      </p>
-      <p>
-        The conference program will include parallel academic sessions organized around the Centre’s core research themes - <strong>firm-level production networks, global value chains, labor markets,</strong> and <strong>innovation</strong> - as well as a policy panel discussion that will be open to participants from the public sector and industry.  
-      </p>
+      <p>The 2026 SMU Annual Trade Conference will take place on May 25–26, 2026, for two full days at Singapore Management University (SMU). The conference is organized by the
+        <a href="https://economics.smu.edu.sg/soetrade" target="_blank" rel="noopener">SMU Centre for Research on International Trade</a>.</p>
+      <p>We invite submissions of high-quality papers in fields including, but not limited to, <strong>international trade, network economics, spatial econometrics,</strong> and <strong>labor economics</strong>.</p>
+      <p>The program will include parallel academic sessions and a policy panel discussion open to public and industry participants.</p>
+
       <h2>Keynote Speakers and Policy Session Panel Discussants</h2>
       <ul>
         <li>Daniel Xu (Duke University)</li>
         <li>Felix Tintlenot (Duke University)</li>
         <li>Ayumu Ken Kikkawa (University of British Columbia)</li>
       </ul>
+
       <h2>Program Committee</h2>
       <ul>
         <li>Pao-Li Chang (Singapore Management University)</li>
@@ -290,23 +284,20 @@
         <li>Felix Tintlenot (Duke University)</li>
         <li>Ayumu Ken Kikkawa (University of British Columbia)</li>
       </ul>
-      <p>
-        More information is available at 
-        <a href="#conf2026-home" class="inline-link">2026 SMU Annual Trade Conference</a>.
-      </p>
-      <p>
-        For any enquiries, please send an email to 
-        <a href="mailto:soetrade@smu.edu.sg" class="inline-link">soetrade@smu.edu.sg</a>.
-      </p>
+
+      <p>More information: <a href="#conf2026-home">2026 SMU Annual Trade Conference</a></p>
+      <p>For enquiries, email <a href="mailto:soetrade@smu.edu.sg">soetrade@smu.edu.sg</a></p>
+
       <h3>Best regards,</h3>
       <h4>Pao-Li Chang and Lin Ma</h4>
       <h4>Local Organizing Committee</h4>
     </div>
 
+    <!-- Other Tabs -->
     <div id="conf-submissions" class="tab-pane">
       <h1>Submissions</h1>
-      <p>All papers should be submitted via this <a href="https://docs.google.com/forms/d/e/1FAIpQLSdmiPYsFijmvBCx5LhVjsDiT3qCNRYOCb8BOly6wk8VBkKRtg/viewform" target="_blank" rel="noopener" class="inline-link">form</a> (PDF format).</p>
-      <p>Extended abstracts are acceptable, but priority will be given to full paper submissions.</p>
+      <p>Submit papers via this <a href="https://docs.google.com/forms/d/e/1FAIpQLSdmiPYsFijmvBCx5LhVjsDiT3qCNRYOCb8BOly6wk8VBkKRtg/viewform" target="_blank" rel="noopener">form</a> (PDF).</p>
+      <p>Extended abstracts acceptable, but priority given to full papers.</p>
       <h2>Important Dates</h2>
       <ul>
         <li>Submission Deadline: March 1, 2026</li>
@@ -314,11 +305,10 @@
         <li>Registration Deadline: March 31, 2026</li>
       </ul>
     </div>
-    
+
     <div id="conf-programme" class="tab-pane">
       <h1>Programme</h1>
-      <p>Click here for detailed conference program.</p>
-      <p>**This conference is paperless and no print-outs will be issued.</p>
+      <p>Click here for detailed conference program. **This conference is paperless.</p>
       <h2>Program Committee</h2>
       <ul>
         <li>Pao-Li Chang (Singapore Management University)</li>
@@ -339,29 +329,26 @@
       <h2>Venue</h2>
       <h3>SMU Centre for Research on International Trade</h3>
       <p>90 Stamford Road, Level 6<br>Singapore 178903</p>
-      <div>
-        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3976.882000159381!2d103.8483283147666!3d1.2967629621197784!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31da199e3d635abd%3A0x6e6c31b42364c3f1!2sSingapore%20Management%20University!5e0!3m2!1sen!2ssg!4v1662621003249!5m2!1sen!2ssg" allowfullscreen="" loading="lazy"></iframe>
-      </div>
+      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3976.882000159381!2d103.8483283147666!3d1.2967629621197784!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31da199e3d635abd%3A0x6e6c31b42364c3f1!2sSingapore%20Management%20University!5e0!3m2!1sen!2ssg!4v1662621003249!5m2!1sen!2ssg" allowfullscreen="" loading="lazy"></iframe>
     </div>
 
     <div id="conf-hotel" class="tab-pane">
       <h1>Hotel Accommodation</h1>
-      <h3>Recommended Hotels</h3>
-      <p><em>(within 5 minutes walking distance)</em></p>
-      <h3>3 Star Hotels</h3>
+      <h3>Recommended Hotels (within 5 minutes walking distance)</h3>
+      <h4>3 Star Hotels</h4>
       <ol>
-        <li><a href="https://www.hotelbencoolen.com/en" target="_blank" rel="noopener" class="inline-link">Hotel Bencoolen Street</a></li>
-        <li><a href="http://www.hotelgrandpacific.com.sg/" target="_blank" rel="noopener" class="inline-link">Hotel Grand Pacific</a></li>
-        <li><a href="http://hotelmi.com/" target="_blank" rel="noopener" class="inline-link">Hotel Mi</a></li>
-        <li><a href="https://www.strandhotel.com.sg/" target="_blank" rel="noopener" class="inline-link">Strand Hotel</a></li>
-        <li><a href="https://www.wwhotels.com/v-hotel/Bencoolen/" target="_blank" rel="noopener" class="inline-link">V Hotel Bencoolen</a></li>
-        <li><a href="http://ymcaih.com.sg/" target="_blank" rel="noopener" class="inline-link">YMCA @ One Orchard</a></li>
+        <li><a href="https://www.hotelbencoolen.com/en" target="_blank">Hotel Bencoolen Street</a></li>
+        <li><a href="http://www.hotelgrandpacific.com.sg/" target="_blank">Hotel Grand Pacific</a></li>
+        <li><a href="http://hotelmi.com/" target="_blank">Hotel Mi</a></li>
+        <li><a href="https://www.strandhotel.com.sg/" target="_blank">Strand Hotel</a></li>
+        <li><a href="https://www.wwhotels.com/v-hotel/Bencoolen/" target="_blank">V Hotel Bencoolen</a></li>
+        <li><a href="http://ymcaih.com.sg/" target="_blank">YMCA @ One Orchard</a></li>
       </ol>
-      <h3>4 to 4.5 Star Hotels</h3>
+      <h4>4 to 4.5 Star Hotels</h4>
       <ol>
-        <li><a href="http://www.carltonhotel.sg/" target="_blank" rel="noopener" class="inline-link">Carlton Hotel Singapore</a></li>
-        <li><a href="https://www.rendezvoushotels.com/" target="_blank" rel="noopener" class="inline-link">Rendezvous Hotel</a></li>
-        <li><a href="https://www.30bencoolen.com.sg/" target="_blank" rel="noopener" class="inline-link">30 Bencoolen</a></li>
+        <li><a href="http://www.carltonhotel.sg/" target="_blank">Carlton Hotel Singapore</a></li>
+        <li><a href="https://www.rendezvoushotels.com/" target="_blank">Rendezvous Hotel</a></li>
+        <li><a href="https://www.30bencoolen.com.sg/" target="_blank">30 Bencoolen</a></li>
       </ol>
     </div>
 
@@ -378,26 +365,11 @@
   const panes = document.querySelectorAll(".tab-pane");
   const confTabs = document.getElementById("conf-tabs");
   const mainLanding = document.getElementById("main-landing");
-  const open2026 = document.getElementById("open-2026");
-
-  open2026.addEventListener("click", (e) => {
-    e.preventDefault();
-
-    mainLanding.classList.remove("active");
-    confTabs.style.display = "block";
-
-    tabs.forEach(t => t.classList.remove("active"));
-    panes.forEach(p => p.classList.remove("active"));
-
-    document.querySelector('[data-tab="conf-home"]').classList.add("active");
-    document.getElementById("conf-home").classList.add("active");
-  });
 
   tabs.forEach(tab => {
     tab.addEventListener("click", () => {
       tabs.forEach(t => t.classList.remove("active"));
       panes.forEach(p => p.classList.remove("active"));
-
       tab.classList.add("active");
       document.getElementById(tab.dataset.tab).classList.add("active");
     });
