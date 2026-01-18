@@ -227,7 +227,7 @@
           <h2>Upcoming Conferences</h2>
           <div class="cards-container-vertical">
             <div class="card">
-              <h3><a href="#" class="conf-home">2026 SMU Annual Trade Conference</a></h3>
+              <h3><a href="#" class="conf-link"  data-tab="conf-home">2026 SMU Annual Trade Conference</a></h3>
               <p><strong>Date:</strong> May 2026</p>
               <p><strong>Venue:</strong> Singapore Management University</p>
             </div>
@@ -361,19 +361,41 @@
 </div>
 
 <script>
-  const tabs = document.querySelectorAll(".tab-link");
-  const panes = document.querySelectorAll(".tab-pane");
-  const confTabs = document.getElementById("conf-tabs");
-  const mainLanding = document.getElementById("main-landing");
+const tabs = document.querySelectorAll(".tab-link");
+const panes = document.querySelectorAll(".tab-pane");
 
-  tabs.forEach(tab => {
-    tab.addEventListener("click", () => {
-      tabs.forEach(t => t.classList.remove("active"));
-      panes.forEach(p => p.classList.remove("active"));
-      tab.classList.add("active");
-      document.getElementById(tab.dataset.tab).classList.add("active");
-    });
+// Function to switch tabs
+function switchTab(tabId) {
+  tabs.forEach(t => t.classList.remove("active"));
+  panes.forEach(p => p.classList.remove("active"));
+
+  // Show the left tab if exists
+  const tabButton = document.querySelector(`.tab-link[data-tab="${tabId}"]`);
+  if (tabButton) {
+    tabButton.classList.add("active");
+  }
+
+  const tabPane = document.getElementById(tabId);
+  if (tabPane) tabPane.classList.add("active");
+}
+
+// Click on left tabs
+tabs.forEach(tab => {
+  tab.addEventListener("click", () => {
+    switchTab(tab.dataset.tab);
   });
+});
+
+// Click on card links
+document.querySelectorAll(".conf-link, .workshop-link").forEach(link => {
+  link.addEventListener("click", (e) => {
+    e.preventDefault();
+    const tabId = link.dataset.tab; // read data-tab
+    switchTab(tabId);
+    document.getElementById("conf-tabs").style.display = "block"; // show tabs
+    document.getElementById("main-landing").classList.remove("active"); // hide main landing
+  });
+});
 </script>
 
 </body>
