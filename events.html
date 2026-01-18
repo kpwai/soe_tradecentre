@@ -227,7 +227,7 @@
           <h2>Upcoming Conferences</h2>
           <div class="cards-container-vertical">
             <div class="card">
-              <h3><a href="events.html#conf-home" class="conf-link" data-tab="conf-home">2026 SMU Annual Trade Conference</a></h3>
+              <h3><a href="events.html#/2026conf/conf-home" class="conf-link" data-tab="conf-home">2026 SMU Annual Trade Conference</a></h3>
               <p><strong>Date:</strong> May 2026</p>
               <p><strong>Venue:</strong> Singapore Management University</p>
             </div>
@@ -425,6 +425,16 @@ window.addEventListener("load", () => {
     confTabs.style.display = "block";
     mainLanding.classList.remove("active");
     history.replaceState({ tab: tabId }, "", window.location.href);
+  }
+});
+
+window.addEventListener("load", () => {
+  const hash = window.location.hash.replace("#", ""); // "/2026conf/conf-home"
+  if (hash.includes("/")) {
+    const tabId = hash.split("/")[2]; // "conf-home"
+    switchTab(tabId);
+    confTabs.style.display = "block";
+    mainLanding.classList.remove("active");
   }
 });
 </script>
