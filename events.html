@@ -114,15 +114,24 @@
       border: none;
     }
   <!-- CSS for cards -->
-  .cards-container {
+  .columns-container {
     display: flex;
     flex-wrap: wrap;
-    gap: 1.5rem;
+    gap: 2rem;
     margin-bottom: 2rem;
   }
 
+  .column {
+    flex: 1 1 45%; /* Each column takes roughly 45% of container */
+  }
+
+  .cards-container-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
   .card {
-    flex: 1 1 300px;
     border: 1px solid #ddd;
     border-radius: 8px;
     padding: 1rem;
@@ -132,8 +141,8 @@
   }
 
   .card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transform: translateY(-3px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
   }
 
   .card h3 {
@@ -154,6 +163,16 @@
   .card p {
     margin: 0.25rem 0;
     font-size: 0.95rem;
+  }
+
+  /* Responsive: stack columns on small screens */
+  @media (max-width: 768px) {
+    .columns-container {
+      flex-direction: column;
+    }
+    .column {
+      flex: 1 1 100%;
+    }
   }
 </style>
 </head>
@@ -199,34 +218,43 @@
     It brings together leading scholars, policymakers, and practitioners in international economics.
   </p>
 
-  <!-- CONFERENCES SECTION -->
-  <h2>Upcoming Conferences</h2>
-  <div class="cards-container">
-    <div class="card">
-      <h3><a href="#" class="conf-link">2026 SMU Annual Trade Conference</a></h3>
-      <p><strong>Date:</strong> May 2026</p>
-      <p><strong>Venue:</strong> Singapore Management University</p>
+  <!-- TWO-COLUMN LAYOUT -->
+  <div class="columns-container">
+    
+    <!-- LEFT COLUMN: Conferences -->
+    <div class="column">
+      <h2>Upcoming Conferences</h2>
+      <div class="cards-container-vertical">
+        <div class="card">
+          <h3><a href="#" class="conf-link">2026 SMU Annual Trade Conference</a></h3>
+          <p><strong>Date:</strong> May 2026</p>
+          <p><strong>Venue:</strong> Singapore Management University</p>
+        </div>
+        <div class="card">
+          <h3><a href="#" class="conf-link">2025 SMU Annual Trade Conference</a></h3>
+          <p><strong>Date:</strong> May 2025</p>
+          <p><strong>Venue:</strong> Singapore</p>
+        </div>
+      </div>
     </div>
-    <div class="card">
-      <h3><a href="#" class="conf-link">2025 SMU Annual Trade Conference</a></h3>
-      <p><strong>Date:</strong> May 2025</p>
-      <p><strong>Venue:</strong> Singapore</p>
-    </div>
-  </div>
 
-  <!-- TRADE WORKSHOPS SECTION -->
-  <h2>Trade Workshops</h2>
-  <div class="cards-container">
-    <div class="card">
-      <h3><a href="#" class="workshop-link">2026 Workshop on Global Trade Policy</a></h3>
-      <p><strong>Date:</strong> June 2026</p>
-      <p><strong>Venue:</strong> Singapore</p>
+    <!-- RIGHT COLUMN: Trade Workshops -->
+    <div class="column">
+      <h2>Trade Workshops</h2>
+      <div class="cards-container-vertical">
+        <div class="card">
+          <h3><a href="#" class="workshop-link">2026 Workshop on Global Trade Policy</a></h3>
+          <p><strong>Date:</strong> June 2026</p>
+          <p><strong>Venue:</strong> Singapore</p>
+        </div>
+        <div class="card">
+          <h3><a href="#" class="workshop-link">2025 Workshop on Supply Chain & Trade</a></h3>
+          <p><strong>Date:</strong> July 2025</p>
+          <p><strong>Venue:</strong> Singapore</p>
+        </div>
+      </div>
     </div>
-    <div class="card">
-      <h3><a href="#" class="workshop-link">2025 Workshop on Supply Chain & Trade</a></h3>
-      <p><strong>Date:</strong> July 2025</p>
-      <p><strong>Venue:</strong> Singapore</p>
-    </div>
+
   </div>
 
   <p>
