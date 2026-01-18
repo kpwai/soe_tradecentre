@@ -227,7 +227,7 @@
           <h2>Upcoming Conferences</h2>
           <div class="cards-container-vertical">
             <div class="card">
-              <h3><a href="#" class="conf-link"  data-tab="conf-home">2026 SMU Annual Trade Conference</a></h3>
+              <h3><a href="events.html#conf-home" class="conf-link" data-tab="conf-home">2026 SMU Annual Trade Conference</a></h3>
               <p><strong>Date:</strong> May 2026</p>
               <p><strong>Venue:</strong> Singapore Management University</p>
             </div>
@@ -361,6 +361,8 @@
 <script>
 const tabs = document.querySelectorAll(".tab-link");
 const panes = document.querySelectorAll(".tab-pane");
+const confTabs = document.getElementById("conf-tabs");
+const mainLanding = document.getElementById("main-landing");
 
 // Function to switch tabs
 function switchTab(tabId) {
@@ -369,30 +371,61 @@ function switchTab(tabId) {
 
   // Show the left tab if exists
   const tabButton = document.querySelector(`.tab-link[data-tab="${tabId}"]`);
-  if (tabButton) {
-    tabButton.classList.add("active");
-  }
+  if (tabButton) tabButton.classList.add("active");
 
   const tabPane = document.getElementById(tabId);
   if (tabPane) tabPane.classList.add("active");
 }
 
-// Click on left tabs
-tabs.forEach(tab => {
-  tab.addEventListener("click", () => {
-    switchTab(tab.dataset.tab);
-  });
-});
-
-// Click on card links
+// Handle card clicks
 document.querySelectorAll(".conf-link, .workshop-link").forEach(link => {
   link.addEventListener("click", (e) => {
     e.preventDefault();
-    const tabId = link.dataset.tab; // read data-tab
+    const tabId = link.dataset.tab;
     switchTab(tabId);
-    document.getElementById("conf-tabs").style.display = "block"; // show tabs
-    document.getElementById("main-landing").classList.remove("active"); // hide main landing
+    confTabs.style.display = "block";
+    mainLanding.classList.remove("active");
+
+    // Update URL hash
+    history.pushState({ tab: tabId }, "", link.getAttribute("href"));
   });
+});
+
+// Handle left tabs clicks
+tabs.forEach(tab => {
+  tab.addEventListener("click", () => {
+    const tabId = tab.dataset.tab;
+    switchTab(tabId);
+    // Update URL hash
+    history.pushState({ tab: tabId }, "", `#${tabId}`);
+  });
+});
+
+// Handle back/forward buttons
+window.addEventListener("popstate", (event) => {
+  if (event.state && event.state.tab) {
+    switchTab(event.state.tab);
+    confTabs.style.display = "block";
+    mainLanding.classList.remove("active");
+  } else {
+    // No state → show main events page
+    panes.forEach(p => p.classList.remove("active"));
+    tabs.forEach(t => t.classList.remove("active"));
+    confTabs.style.display = "none";
+    mainLanding.classList.add("active");
+    window.location.hash = "";
+  }
+});
+
+// On page load, check hash
+window.addEventListener("load", () => {
+  if (window.location.hash) {
+    const tabId = window.location.hash.replace("#", "");
+    switchTab(tabId);
+    confTabs.style.display = "block";
+    mainLanding.classList.remove("active");
+    history.replaceState({ tab: tabId }, "", window.location.href);
+  }
 });
 </script>
 
