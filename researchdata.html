@@ -2,30 +2,19 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Research Data | SMU Centre for Research on International Trade</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
-     nav {
+    /* ── SMU CRIT site styles (unchanged) ── */
+    nav {
       background-color: #003366;
       display: flex;
       justify-content: center;
       flex-wrap: wrap;
       padding: 1rem 0;
       font-family: Georgia, serif;
-    }
-     h1 {
-      font-family: Georgia, serif;
-      font-weight: bold;
-      color: #003366;
-      text-align: left;
-      margin: 1.5rem auto;
-    }
-    p {
-      font-family: Georgia, serif;
-      font-size: 18px;
-      line-height: 1.6;
-      margin: 1.5rem auto;
-      color: #333333;
-      text-align: justify;
     }
     nav a {
       color: white;
@@ -37,27 +26,346 @@
       border-radius: 4px 4px 0 0;
       transition: background-color 0.3s, color 0.3s;
     }
-    nav a:hover {
-      background-color: #ffcc00;
-      color: #003366;
-      text-decoration: none;
+    nav a:hover { background-color: #ffcc00; color: #003366; }
+    nav a.active { background-color: #ffcc00; color: #003366; }
+
+    /* ── Page wrapper ── */
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: #f2f1ed;
+      color: #1a1916;
+      font-size: 14px;
+      line-height: 1.6;
     }
-    nav a.active {
-      background-color: #ffcc00;
+
+    .page-header {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1.5rem 1.5rem 0.5rem;
+    }
+    .page-header h1 {
+      font-family: Georgia, serif;
+      font-weight: bold;
+      color: #003366;
+      font-size: 1.6rem;
+      margin: 0 0 4px;
+    }
+    .page-header p {
+      font-family: Georgia, serif;
+      font-size: 15px;
+      color: #555;
+      margin: 0;
+    }
+
+    /* ── Section tabs ── */
+    .section-tabs {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      display: flex;
+      gap: 4px;
+      border-bottom: 2px solid #003366;
+      margin-top: 1rem;
+    }
+    .section-tab {
+      padding: 8px 20px;
+      font-size: 13px;
+      font-weight: 500;
+      font-family: 'Inter', sans-serif;
+      border: none;
+      background: transparent;
+      color: #555;
+      cursor: pointer;
+      border-radius: 6px 6px 0 0;
+      border: 1px solid transparent;
+      border-bottom: none;
+      transition: all 0.15s;
+      margin-bottom: -2px;
+    }
+    .section-tab:hover { background: #e8eef5; color: #003366; }
+    .section-tab.active {
+      background: #fff;
+      color: #003366;
+      border-color: #003366;
+      border-bottom-color: #fff;
+      font-weight: 600;
+    }
+
+    /* ── Patent browser container ── */
+    .browser-wrap {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1.5rem;
+    }
+
+    /* ── CSS variables for patent browser ── */
+    :root {
+      --bg: #f2f1ed;
+      --surface: #ffffff;
+      --border: #dedad4;
+      --border-strong: #c4bfb8;
+      --text: #1a1916;
+      --text-muted: #6b6760;
+      --text-faint: #9e9890;
+      --accent: #003366;
+      --accent-light: #e6edf5;
+      --accent-mid: #1a5fa8;
+      --teal: #0f6e56;
+      --teal-light: #e1f5ee;
+      --amber: #854f0b;
+      --amber-light: #faeeda;
+      --red: #a32d2d;
+      --red-light: #fcebeb;
+      --green: #3b6d11;
+      --green-light: #eaf3de;
+      --gray-tag: #5f5e5a;
+      --gray-tag-light: #f1efe8;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+      --r: 10px;
+      --r-sm: 6px;
+    }
+
+    /* ── Stats bar ── */
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 14px 16px;
+      box-shadow: var(--shadow-sm);
+    }
+    .stat-label { font-size: 11px; color: var(--text-faint); font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+    .stat-value { font-family: Georgia, serif; font-size: 26px; font-weight: 700; color: var(--accent); line-height: 1; margin-bottom: 4px; }
+    .stat-delta { font-size: 11px; color: var(--green); font-weight: 500; }
+    .stat-delta.neutral { color: var(--text-faint); }
+
+    /* ── Search panel ── */
+    .search-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 18px 20px;
+      margin-bottom: 14px;
+      box-shadow: var(--shadow-sm);
+    }
+    .search-row { display: flex; gap: 8px; margin-bottom: 14px; }
+    .search-wrap { flex: 1; position: relative; }
+    .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-faint); pointer-events: none; }
+    .search-icon svg { width: 16px; height: 16px; }
+    input[type="text"], select {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      color: var(--text);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    input[type="text"]:focus, select:focus {
+      border-color: var(--accent-mid);
+      box-shadow: 0 0 0 3px rgba(26,95,168,0.12);
+    }
+    .search-input { width: 100%; padding: 9px 12px 9px 38px; }
+    .filter-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .filter-select { padding: 7px 10px; cursor: pointer; }
+    .filter-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-left: 2px; }
+    .filter-tag {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 4px 10px;
+      background: var(--accent-light); color: var(--accent-mid);
+      border: 1px solid #b5d4f4;
+      border-radius: 20px; font-size: 11px; font-weight: 500;
+      cursor: pointer;
+    }
+    .filter-tag:hover { background: #d0e4f5; }
+    .filter-tag svg { width: 11px; height: 11px; }
+    .date-range-wrap { display: inline-flex; align-items: center; gap: 5px; padding: 0 2px; }
+    .date-range-label { font-size: 12px; color: var(--text-faint); font-weight: 500; white-space: nowrap; }
+    .date-range-sep { font-size: 12px; color: var(--text-faint); }
+    .filter-select-year { width: 76px; padding: 7px 4px; text-align: center; }
+    select.filter-select-year { text-align-last: center; }
+    .filter-select-invalid { border-color: var(--red) !important; box-shadow: 0 0 0 2px rgba(163,45,45,0.12) !important; }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 7px 14px;
+      border-radius: var(--r-sm);
+      font-size: 13px; font-weight: 500;
+      cursor: pointer; border: none;
+      transition: all 0.15s; font-family: 'Inter', sans-serif;
+    }
+    .btn svg { width: 14px; height: 14px; }
+    .btn-ghost { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
+    .btn-ghost:hover { background: var(--bg); color: var(--text); border-color: var(--border-strong); }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: #002244; }
+    .btn-success { background: var(--green-light); color: var(--green); border: 1px solid #c0dd97; }
+    .btn-success:hover { background: #d8edba; }
+
+    /* ── Results toolbar ── */
+    .results-toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .results-info { font-size: 13px; color: var(--text-muted); flex: 1; }
+    .results-info strong { color: var(--text); font-weight: 600; }
+    .results-info em { font-style: italic; color: var(--accent-mid); }
+    .view-toggle { display: flex; border: 1px solid var(--border); border-radius: var(--r-sm); overflow: hidden; }
+    .view-btn { padding: 6px 9px; background: transparent; border: none; cursor: pointer; color: var(--text-faint); display: flex; align-items: center; transition: all 0.15s; }
+    .view-btn svg { width: 14px; height: 14px; }
+    .view-btn.active { background: var(--accent-light); color: var(--accent); }
+    .view-btn:hover:not(.active) { background: var(--bg); }
+
+    /* ── Bulk bar ── */
+    .bulk-bar {
+      display: none; align-items: center; gap: 10px;
+      padding: 9px 14px;
+      background: var(--accent-light); border: 1px solid #b5d4f4;
+      border-radius: var(--r-sm); margin-bottom: 12px;
+      font-size: 13px; color: var(--accent);
+    }
+    .bulk-bar.visible { display: flex; }
+    .bulk-bar svg { width: 15px; height: 15px; }
+    .bulk-actions { margin-left: auto; display: flex; gap: 6px; }
+
+    /* ── Patent cards ── */
+    .patent-list { display: flex; flex-direction: column; gap: 10px; }
+    .patent-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 16px 18px;
+      cursor: pointer;
+      transition: all 0.15s;
+      box-shadow: var(--shadow-sm);
+    }
+    .patent-card:hover { border-color: var(--border-strong); box-shadow: var(--shadow-md); }
+    .patent-card.selected { border-color: var(--accent-mid); border-width: 1.5px; background: #f7faff; }
+    .card-top { display: flex; gap: 12px; margin-bottom: 10px; }
+    .card-checkbox {
+      width: 16px; height: 16px; flex-shrink: 0; margin-top: 2px;
+      border: 1.5px solid var(--border-strong); border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s; background: var(--surface);
+    }
+    .card-checkbox.checked { background: var(--accent); border-color: var(--accent); }
+    .card-checkbox.checked::after { content: ''; width: 8px; height: 5px; border-left: 1.5px solid #fff; border-bottom: 1.5px solid #fff; transform: rotate(-45deg) translateY(-1px); display: block; }
+    .card-body { flex: 1; min-width: 0; }
+    .card-id {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px; color: var(--text-faint); margin-bottom: 4px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .card-id svg { width: 12px; height: 12px; }
+    .card-title { font-size: 14px; font-weight: 500; color: var(--text); line-height: 1.45; margin-bottom: 8px; }
+    .card-title mark { background: #fff3b0; color: var(--amber); padding: 0 2px; border-radius: 3px; font-weight: 600; }
+    .card-meta { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 8px; }
+    .meta-item { display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--text-muted); }
+    .meta-item svg { width: 13px; height: 13px; color: var(--text-faint); }
+    .card-tags { display: flex; gap: 5px; flex-wrap: wrap; }
+    .tag { font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 500; }
+    .tag-blue { background: var(--accent-light); color: var(--accent-mid); }
+    .tag-teal { background: var(--teal-light); color: var(--teal); }
+    .tag-amber { background: var(--amber-light); color: var(--amber); }
+    .tag-gray { background: var(--gray-tag-light); color: var(--gray-tag); }
+    .card-footer {
+      display: flex; align-items: center; gap: 6px;
+      margin-top: 12px; padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── Status pills ── */
+    .status-pill { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 500; }
+    .status-pill svg { width: 11px; height: 11px; }
+    .status-granted { background: var(--green-light); color: var(--green); }
+    .status-pending { background: var(--amber-light); color: var(--amber); }
+    .status-expired { background: var(--gray-tag-light); color: var(--gray-tag); }
+
+    /* ── Action buttons ── */
+    .btn-action {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 5px 10px;
+      border-radius: var(--r-sm);
+      font-size: 12px; font-weight: 400;
+      cursor: pointer; border: 1px solid var(--border);
+      background: var(--surface); color: var(--text-muted);
+      transition: all 0.15s; font-family: 'Inter', sans-serif;
+    }
+    .btn-action svg { width: 13px; height: 13px; }
+    .btn-action:hover { background: var(--bg); color: var(--text); border-color: var(--border-strong); }
+    .btn-download { background: var(--accent-light); color: var(--accent); border-color: #b5d4f4; font-weight: 500; }
+    .btn-download:hover { background: #d0e4f5; }
+    .btn-pdf { background: var(--red-light); color: var(--red); border-color: #f7c1c1; font-weight: 500; }
+    .btn-pdf:hover { background: #fad5d5; }
+
+    /* ── Pagination ── */
+    .pagination { display: flex; align-items: center; justify-content: center; gap: 4px; margin-top: 24px; }
+    .pg-btn {
+      min-width: 34px; height: 34px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; border: 1px solid var(--border);
+      border-radius: var(--r-sm); background: var(--surface);
+      color: var(--text-muted); cursor: pointer;
+      transition: all 0.15s; font-family: 'Inter', sans-serif;
+    }
+    .pg-btn:hover:not(.active):not(.disabled) { background: var(--bg); border-color: var(--border-strong); color: var(--text); }
+    .pg-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 600; }
+    .pg-btn.disabled { opacity: 0.4; pointer-events: none; }
+    .pg-ellipsis { font-size: 13px; color: var(--text-faint); padding: 0 4px; }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed; bottom: 24px; right: 24px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 4px solid #003366;
+      border-radius: var(--r);
+      padding: 12px 16px;
+      display: flex; align-items: center; gap: 10px;
+      font-size: 13px; color: var(--text);
+      box-shadow: var(--shadow-md);
+      opacity: 0; transform: translateY(8px);
+      transition: all 0.25s;
+      pointer-events: none; z-index: 999;
+      max-width: 320px;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast svg { width: 16px; height: 16px; color: #003366; flex-shrink: 0; }
+
+    /* ── Topbar inside browser ── */
+    .browser-topbar {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 18px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .browser-topbar-title {
+      font-family: Georgia, serif;
+      font-size: 17px; font-weight: bold;
       color: #003366;
     }
-    .container {
-      max-width: 900px;
-      margin: 2rem auto;
-      padding: 1rem;
-      background: #f8f9fa;
-      border-radius: 8px;
-      font-family: Arial, sans-serif;
+    .browser-topbar-sub { font-size: 12px; color: var(--text-faint); margin-top: 2px; }
+    .browser-topbar-right { margin-left: auto; display: flex; gap: 8px; }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+
+    @media (max-width: 800px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .search-row { flex-wrap: wrap; }
+      .filter-row { flex-wrap: wrap; }
+      .card-footer { flex-wrap: wrap; }
+      .browser-topbar { flex-wrap: wrap; }
+      .browser-topbar-right { flex-wrap: wrap; }
     }
   </style>
 </head>
 <body>
 
+<!-- SMU CRIT Navigation (unchanged) -->
 <nav>
   <a href="index.html">Trade Centre</a>
   <a href="about.html">About</a>
@@ -69,13 +377,421 @@
   <a href="contact.html">Contact</a>
 </nav>
 
-<div class="container">
+<!-- Page header -->
+<div class="page-header">
   <h1>Research Data</h1>
-  <p>Downloadable datasets and supplementary material will be available here.</p>
-
-  <!--<h2>Download Sample Data</h2>
-  <a href="data/sample.csv" download>Download CSV File</a>-->
+  <p>Search and download patent records, datasets, and supplementary research material from the CRIT patent database.</p>
 </div>
 
+<!-- Section tabs -->
+<div class="section-tabs">
+  <button class="section-tab active" onclick="switchTab(this,'patents')">
+    Patent Search
+  </button>
+  <button class="section-tab" onclick="switchTab(this,'datasets')">
+    Datasets
+  </button>
+  <button class="section-tab" onclick="switchTab(this,'supplementary')">
+    Supplementary Files
+  </button>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     Patent Browser (tab: patents)
+════════════════════════════════════════════════════════════ -->
+<div class="browser-wrap" id="tab-patents">
+
+  <!-- Browser topbar -->
+  <div class="browser-topbar">
+    <div>
+      <div class="browser-topbar-title">Patent Database Browser</div>
+      <div class="browser-topbar-sub">1976 – 2026 · Sources: USPTO, Google Patents, CRIT</div>
+    </div>
+    <div class="browser-topbar-right">
+      <button class="btn btn-ghost" onclick="showToast('Sync triggered — checking for new records')">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1 4l3-3 3 3M4 1v9a3 3 0 006 0V5M15 12l-3 3-3-3M12 15V6"/></svg>
+        Sync index
+      </button>
+      <button class="btn btn-primary" onclick="showToast('Upload dialog would open here')">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 11v2a1 1 0 001 1h10a1 1 0 001-1v-2M8 2v8M5 7l3 3 3-3"/></svg>
+        Upload patents
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">Total Patents</div>
+      <div class="stat-value">12,847</div>
+      <div class="stat-delta">↑ 142 this week</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Granted</div>
+      <div class="stat-value">9,201</div>
+      <div class="stat-delta neutral">71.6% of total</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Pending</div>
+      <div class="stat-value">2,814</div>
+      <div class="stat-delta">↑ 38 new filings</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Downloads</div>
+      <div class="stat-value">4,392</div>
+      <div class="stat-delta neutral">This month</div>
+    </div>
+  </div>
+
+  <!-- Search panel -->
+  <div class="search-panel">
+    <div class="search-row">
+      <div class="search-wrap">
+        <span class="search-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="5"/><line x1="11" y1="11" x2="14" y2="14"/></svg>
+        </span>
+        <input class="search-input" type="text" id="searchInput" placeholder='Search title, inventor, assignee, or patent number…' value="machine learning">
+      </div>
+      <button class="btn btn-primary" onclick="runSearch()">Search</button>
+      <button class="btn btn-ghost">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="3" y1="8" x2="13" y2="8"/><line x1="3" y1="4" x2="9" y2="4"/><line x1="3" y1="12" x2="11" y2="12"/></svg>
+        Advanced
+      </button>
+    </div>
+    <div class="filter-row" id="filterRow">
+      <select class="filter-select" id="fClassification" onchange="syncTags()">
+        <option value="">All Classifications</option>
+        <option value="H04L">H04L — Data Networks</option>
+        <option value="G06N" selected>G06N — Machine Learning</option>
+        <option value="G06F">G06F — Computing</option>
+        <option value="A61B">A61B — Medical Devices</option>
+        <option value="B60W">B60W — Autonomous Vehicles</option>
+      </select>
+      <select class="filter-select" id="fStatus" onchange="syncTags()">
+        <option value="">All Statuses</option>
+        <option value="Granted">Granted</option>
+        <option value="Pending">Pending</option>
+        <option value="Expired">Expired</option>
+      </select>
+      <select class="filter-select" id="fAssignee" onchange="syncTags()">
+        <option value="">All Assignees</option>
+        <option value="Acme Research Corp">Acme Research Corp</option>
+        <option value="NovaTech Industries">NovaTech Industries</option>
+        <option value="QuantumSystems Inc">QuantumSystems Inc</option>
+      </select>
+      <select class="filter-select" id="fSource" onchange="syncTags()">
+        <option value="">All Sources</option>
+        <option value="USPTO">USPTO</option>
+        <option value="Google Patents">Google Patents</option>
+        <option value="CRIT">CRIT</option>
+      </select>
+      <span class="date-range-wrap">
+        <span class="date-range-label">Filed</span>
+        <select class="filter-select filter-select-year" id="fYearFrom" onchange="validateYears();syncTags()"></select>
+        <span class="date-range-sep">—</span>
+        <select class="filter-select filter-select-year" id="fYearTo" onchange="validateYears();syncTags()"></select>
+      </span>
+      <div class="filter-tags" id="filterTags"></div>
+    </div>
+  </div>
+
+  <!-- Results toolbar -->
+  <div class="results-toolbar">
+    <div class="results-info" id="resultsInfo">
+      Showing <strong>6</strong> of <strong>847</strong> results for <em>"machine learning"</em>
+    </div>
+    <div class="view-toggle">
+      <button class="view-btn active" title="List view">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="1" y1="3" x2="13" y2="3"/><line x1="1" y1="7" x2="13" y2="7"/><line x1="1" y1="11" x2="13" y2="11"/></svg>
+      </button>
+      <button class="view-btn" title="Grid view">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="1" y="1" width="5" height="5" rx="1"/><rect x="8" y="1" width="5" height="5" rx="1"/><rect x="1" y="8" width="5" height="5" rx="1"/><rect x="8" y="8" width="5" height="5" rx="1"/></svg>
+      </button>
+    </div>
+    <button class="btn btn-ghost" onclick="selectAll()">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="2" width="12" height="12" rx="2"/><polyline points="5,8 7,10 11,6"/></svg>
+      Select all
+    </button>
+    <button class="btn btn-success" onclick="bulkExport()">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 11v2a1 1 0 001 1h10a1 1 0 001-1v-2M8 2v8M5 7l3 3 3-3"/></svg>
+      Export CSV
+    </button>
+  </div>
+
+  <!-- Bulk bar -->
+  <div class="bulk-bar" id="bulkBar">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="2" width="12" height="12" rx="2"/><polyline points="5,8 7,10 11,6"/></svg>
+    <span id="bulkCount">0 patents selected</span>
+    <div class="bulk-actions">
+      <button class="btn-action btn-download" onclick="bulkExport()">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 11v2a1 1 0 001 1h10a1 1 0 001-1v-2M8 2v8M5 7l3 3 3-3"/></svg>
+        Download selected
+      </button>
+      <button class="btn-action" onclick="clearSelection()">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="3" y1="3" x2="13" y2="13"/><line x1="13" y1="3" x2="3" y2="13"/></svg>
+        Clear
+      </button>
+    </div>
+  </div>
+
+  <!-- Patent list -->
+  <div class="patent-list" id="patentList"></div>
+
+  <!-- Pagination -->
+  <div class="pagination">
+    <button class="pg-btn disabled"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><polyline points="9,2 4,7 9,12"/></svg></button>
+    <button class="pg-btn active">1</button>
+    <button class="pg-btn" onclick="changePage(this)">2</button>
+    <button class="pg-btn" onclick="changePage(this)">3</button>
+    <button class="pg-btn" onclick="changePage(this)">4</button>
+    <span class="pg-ellipsis">…</span>
+    <button class="pg-btn" onclick="changePage(this)">42</button>
+    <button class="pg-btn" onclick="changePage(this)"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><polyline points="5,2 10,7 5,12"/></svg></button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     Datasets tab (placeholder)
+════════════════════════════════════════════════════════════ -->
+<div class="browser-wrap" id="tab-datasets" style="display:none;">
+  <p style="font-family:Georgia,serif;font-size:16px;color:#555;padding:2rem 0;">
+    Structured and unstructured datasets will be listed here. Coming soon.
+  </p>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     Supplementary files tab (placeholder)
+════════════════════════════════════════════════════════════ -->
+<div class="browser-wrap" id="tab-supplementary" style="display:none;">
+  <p style="font-family:Georgia,serif;font-size:16px;color:#555;padding:2rem 0;">
+    Supplementary material and replication files will be available here. Coming soon.
+  </p>
+</div>
+
+<!-- Toast notification -->
+<div class="toast" id="toast">
+  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><polyline points="5,8 7,10 11,6"/></svg>
+  <span id="toastMsg">Done</span>
+</div>
+
+<script>
+/* ── Tab switching ─────────────────────────────────────── */
+function switchTab(btn, id) {
+  document.querySelectorAll('.section-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  ['patents','datasets','supplementary'].forEach(t => {
+    document.getElementById('tab-' + t).style.display = t === id ? 'block' : 'none';
+  });
+}
+
+/* ── Patent data ───────────────────────────────────────── */
+const DATA = [
+  {
+    id: "US11,842,190 B2",
+    title: "Federated <mark>Machine Learning</mark> Framework for Distributed Edge Devices with Differential Privacy",
+    assignee: "NovaTech Industries", inventors: "Chen, Y.; Patel, R.; Müller, K.",
+    filed: "2021-03-14", granted: "2023-12-05", status: "granted",
+    classifications: ["G06N 20/00","H04L 9/40"],
+    tags: [["blue","Federated Learning"],["teal","Privacy"],["blue","Edge AI"]],
+  },
+  {
+    id: "US2024/0156823 A1",
+    title: "Transformer-Based <mark>Machine Learning</mark> Model Compression via Structured Pruning and Knowledge Distillation",
+    assignee: "Acme Research Corp", inventors: "Okonkwo, A.; Liu, S.",
+    filed: "2023-06-22", granted: null, status: "pending",
+    classifications: ["G06N 3/04","G06F 18/214"],
+    tags: [["blue","Model Compression"],["amber","Pending Review"],["teal","NLP"]],
+  },
+  {
+    id: "US11,701,457 B1",
+    title: "Reinforcement <mark>Learning</mark>-Driven Adaptive Traffic Signal Control System for Urban Intersections",
+    assignee: "QuantumSystems Inc", inventors: "Singh, P.; Tanaka, H.; Rossi, M.",
+    filed: "2020-11-08", granted: "2023-07-18", status: "granted",
+    classifications: ["B60W 60/00","G06N 20/00"],
+    tags: [["blue","RL"],["teal","Smart Cities"],["gray","Transport"]],
+  },
+  {
+    id: "EP4112837 A2",
+    title: "Anomaly Detection in Industrial IoT Sensor Streams Using <mark>Machine Learning</mark> Ensemble Methods",
+    assignee: "NovaTech Industries", inventors: "Fischer, B.; Al-Sayed, N.",
+    filed: "2022-01-30", granted: null, status: "pending",
+    classifications: ["G06N 20/20","G06F 17/18"],
+    tags: [["blue","Anomaly Detection"],["teal","IoT"],["amber","Ensemble"]],
+  },
+  {
+    id: "US10,943,682 B2",
+    title: "Neural Network-Based Drug-Target Interaction Prediction for <mark>Machine Learning</mark>-Assisted Drug Discovery",
+    assignee: "Acme Research Corp", inventors: "Vasquez, L.; Kim, J.; Wang, X.",
+    filed: "2018-09-12", granted: "2021-03-09", status: "expired",
+    classifications: ["A61B 5/00","G06N 3/08"],
+    tags: [["blue","Drug Discovery"],["teal","Bioinformatics"],["gray","Expired"]],
+  },
+  {
+    id: "US11,938,014 B2",
+    title: "Self-Supervised Contrastive <mark>Learning</mark> for Multimodal Medical Image Segmentation Without Manual Annotations",
+    assignee: "QuantumSystems Inc", inventors: "Dubois, C.; Petrova, I.; Nakamura, T.",
+    filed: "2022-08-19", granted: "2024-03-26", status: "granted",
+    classifications: ["A61B 5/00","G06N 20/00"],
+    tags: [["blue","Medical Imaging"],["teal","Self-Supervised"],["blue","Segmentation"]],
+  },
+];
+
+let selected = new Set();
+
+const statusConfig = {
+  granted: { cls:'status-granted', icon:'<circle cx="8" cy="8" r="6"/><polyline points="5,8 7,10 11,6"/>', label:'Granted' },
+  pending: { cls:'status-pending', icon:'<circle cx="8" cy="8" r="6"/><polyline points="8,5 8,8 10,10"/>', label:'Pending' },
+  expired: { cls:'status-expired', icon:'<circle cx="8" cy="8" r="6"/><line x1="5" y1="5" x2="11" y2="11"/><line x1="11" y1="5" x2="5" y2="11"/>', label:'Expired' },
+};
+
+function statusPill(s) {
+  const c = statusConfig[s];
+  return `<span class="status-pill ${c.cls}"><svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">${c.icon}</svg>${c.label}</span>`;
+}
+function tagHtml(color, label) { return `<span class="tag tag-${color}">${label}</span>`; }
+
+function renderList() {
+  document.getElementById('patentList').innerHTML = DATA.map((p, i) => {
+    const isSel = selected.has(i);
+    return `
+    <div class="patent-card${isSel?' selected':''}" onclick="toggleCard(event,${i})">
+      <div class="card-top">
+        <div class="card-checkbox${isSel?' checked':''}"></div>
+        <div class="card-body">
+          <div class="card-id">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="1" width="10" height="13" rx="1.5"/><line x1="4" y1="5" x2="10" y2="5"/><line x1="4" y1="8" x2="8" y2="8"/></svg>
+            ${p.id}
+          </div>
+          <div class="card-title">${p.title}</div>
+          <div class="card-meta">
+            ${statusPill(p.status)}
+            <span class="meta-item"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="1" y="3" width="14" height="12" rx="1.5"/><path d="M5 3V1M11 3V1M1 7h14"/></svg>Filed ${p.filed}</span>
+            ${p.granted?`<span class="meta-item"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="1" y="3" width="14" height="12" rx="1.5"/><path d="M5 3V1M11 3V1M1 7h14"/><polyline points="5,10 7,12 11,9"/></svg>Granted ${p.granted}</span>`:''}
+            <span class="meta-item"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="1" y="4" width="14" height="10" rx="1.5"/><path d="M1 7h14M5 4V2M11 4V2"/></svg>${p.assignee}</span>
+            <span class="meta-item"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="6" cy="5" r="3"/><path d="M1 14c0-2.76 2.24-4 5-4M10 14l2 2 4-4"/></svg>${p.inventors}</span>
+          </div>
+          <div class="card-tags">
+            ${p.classifications.map(c=>tagHtml('gray',c)).join('')}
+            ${p.tags.map(([col,label])=>tagHtml(col,label)).join('')}
+          </div>
+        </div>
+      </div>
+      <div class="card-footer" onclick="event.stopPropagation()">
+        <button class="btn-action" onclick="showToast('Opening detail view for ${p.id}')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="8" cy="8" r="3"/><path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z"/></svg>View details</button>
+        <button class="btn-action" onclick="showToast('Finding patents similar to ${p.id}…')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="5" cy="8" r="3"/><circle cx="11" cy="8" r="3"/></svg>Find similar</button>
+        <button class="btn-action" onclick="showToast('Citation copied to clipboard')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M5 3H3a1 1 0 00-1 1v9a1 1 0 001 1h10a1 1 0 001-1V4a1 1 0 00-1-1h-2M5 3a1 1 0 011-1h4a1 1 0 011 1v0a1 1 0 01-1 1H6a1 1 0 01-1-1z"/></svg>Cite IEEE</button>
+        <button class="btn-action btn-download" onclick="event.stopPropagation();showToast('Downloading ${p.id}.pdf…')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 11v2a1 1 0 001 1h10a1 1 0 001-1v-2M8 2v8M5 7l3 3 3-3"/></svg>Download PDF</button>
+        <button class="btn-action btn-pdf" onclick="event.stopPropagation();showToast('Generating full-text export for ${p.id}…')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="1" width="10" height="13" rx="1.5"/><line x1="4" y1="5" x2="10" y2="5"/><line x1="4" y1="8" x2="10" y2="8"/><line x1="4" y1="11" x2="7" y2="11"/></svg>Full text</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleCard(e, idx) {
+  if (e.target.closest('.card-footer')) return;
+  selected.has(idx) ? selected.delete(idx) : selected.add(idx);
+  updateBulk(); renderList();
+}
+
+function updateBulk() {
+  const bar = document.getElementById('bulkBar');
+  const n = selected.size;
+  bar.classList.toggle('visible', n > 0);
+  if (n > 0) document.getElementById('bulkCount').textContent = `${n} patent${n>1?'s':''} selected`;
+}
+
+function selectAll() {
+  selected.size === DATA.length ? selected.clear() : DATA.forEach((_,i) => selected.add(i));
+  updateBulk(); renderList();
+}
+function clearSelection() { selected.clear(); updateBulk(); renderList(); }
+function bulkExport() { showToast(`Exporting ${selected.size||DATA.length} patents as CSV`); }
+function runSearch() {
+  const q = document.getElementById('searchInput').value || 'machine learning';
+  document.getElementById('resultsInfo').innerHTML = `Showing <strong>6</strong> of <strong>847</strong> results for <em>"${q}"</em>`;
+  showToast(`Searched: "${q}"`);
+}
+function changePage(btn) {
+  document.querySelectorAll('.pg-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+let toastTimer;
+function showToast(msg) {
+  clearTimeout(toastTimer);
+  const t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  t.classList.add('show');
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+document.getElementById('searchInput').addEventListener('keydown', e => { if (e.key==='Enter') runSearch(); });
+
+/* ── Year dropdowns ─────────────────────────────────────── */
+function buildYearOptions(el, defaultYear) {
+  el.innerHTML = '<option value="">Any year</option>';
+  for (let y = 2026; y >= 1976; y--) {
+    const o = document.createElement('option');
+    o.value = y; o.textContent = y;
+    if (y === defaultYear) o.selected = true;
+    el.appendChild(o);
+  }
+}
+
+function validateYears() {
+  const from = document.getElementById('fYearFrom');
+  const to   = document.getElementById('fYearTo');
+  const fv = parseInt(from.value)||0, tv = parseInt(to.value)||9999;
+  const bad = fv && tv && fv > tv;
+  from.classList.toggle('filter-select-invalid', bad);
+  to.classList.toggle('filter-select-invalid', bad);
+}
+
+/* ── Live filter tags ───────────────────────────────────── */
+function syncTags() {
+  validateYears();
+  const wrap = document.getElementById('filterTags');
+  wrap.innerHTML = '';
+  const defs = [
+    { id:'fClassification', label: v => v },
+    { id:'fStatus',         label: v => v },
+    { id:'fAssignee',       label: v => v },
+    { id:'fSource',         label: v => '⊕ ' + v },
+    { id: null, label: () => {
+        const fv = document.getElementById('fYearFrom').value;
+        const tv = document.getElementById('fYearTo').value;
+        if (!fv && !tv) return null;
+        if (fv && tv) return `${fv} – ${tv}`;
+        return fv ? `From ${fv}` : `To ${tv}`;
+      }
+    },
+  ];
+  defs.forEach(f => {
+    const val = f.id
+      ? (document.getElementById(f.id).value ? f.label(document.getElementById(f.id).value) : null)
+      : f.label();
+    if (!val) return;
+    const span = document.createElement('span');
+    span.className = 'filter-tag';
+    span.innerHTML = `${val} <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="2" y1="2" x2="10" y2="10"/><line x1="10" y1="2" x2="2" y2="10"/></svg>`;
+    span.addEventListener('click', () => {
+      if (f.id) { document.getElementById(f.id).value = ''; }
+      else {
+        document.getElementById('fYearFrom').value = '';
+        document.getElementById('fYearTo').value = '';
+        validateYears();
+      }
+      syncTags();
+    });
+    wrap.appendChild(span);
+  });
+}
+
+/* ── Init ───────────────────────────────────────────────── */
+buildYearOptions(document.getElementById('fYearFrom'), 1976);
+buildYearOptions(document.getElementById('fYearTo'), 2026);
+syncTags();
+renderList();
+</script>
 </body>
 </html>
