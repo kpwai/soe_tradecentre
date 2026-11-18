@@ -116,24 +116,35 @@
       padding: 0;
       margin: 0;
       position: absolute;
-      animation: ticker 12s linear infinite;
+      left: 0;
+      right: 0;
+      /* The animation is set by the script at the bottom of the page,
+         so it adapts automatically to the number of news items. */
     }
 
+    /* Keep each headline on one line; long ones end with "…" */
     .news-ticker li {
       height: 2rem;
-      display: flex;
-      align-items: center;
+      line-height: 2rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
-    @keyframes ticker {
-      0%   { top: 0; }
-      20%  { top: 0; }
-      25%  { top: -2rem; }
-      45%  { top: -2rem; }
-      50%  { top: -4rem; }
-      70%  { top: -4rem; }
-      75%  { top: -6rem; }
-      95%  { top: -6rem; }
-      100% { top: 0; }
+
+    .news-ticker a {
+      color: #003366;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .news-ticker a:hover,
+    .news-ticker a:focus {
+      text-decoration: underline;
+    }
+
+    /* Pause the ticker while the mouse is over it so visitors can read and click */
+    .news-ticker:hover ul,
+    .news-ticker:focus-within ul {
+      animation-play-state: paused;
     }
 
     footer {
@@ -184,13 +195,18 @@
     </div>
 
     <!-- Right Column: Latest News -->
+    <!-- To add news: insert a new <li> at the top (newest first). Nothing else needs changing. -->
     <div class="news">
       <h2>Latest News</h2>
       <div class="news-ticker">
         <ul>
-          <li> Site launched on January 1, 2026.</li>
-          <li> Research outputs will be posted under the Research tab.</li>
-          <li> Research data will be available under the Data tab soon.</li>
+          <li><a href="https://economics.smu.edu.sg/events/trade/2026" target="_blank" rel="noopener">HKUST-Fudan-SMU Conference 2026</a>&nbsp;· 8–9 Jul 2026</li>
+          <li><a href="https://economics.smu.edu.sg/soetrade/events/conference/2026" target="_blank" rel="noopener">2026 SMU Trade Conference – Policy</a>&nbsp;· 26 May 2026</li>
+          <li><a href="https://economics.smu.edu.sg/soetrade/events/conference/2026" target="_blank" rel="noopener">2026 SMU Trade Conference</a>&nbsp;· 25–26 May 2026</li>
+          <li>Site launched on January 1, 2026.</li>
+          <li>Research outputs will be posted under the Research tab.</li>
+          <li>Research data will be available under the Data tab soon.</li>
+          <li><a href="https://phys.org/news/2024-08-wto-imbalances.html" target="_blank" rel="noopener">Examining WTO system amidst growing trade imbalances</a>&nbsp;· 30 Aug 2024 · <a href="https://ink.library.smu.edu.sg/soe_research/2753/" target="_blank" rel="noopener">Paper</a></li>
         </ul>
       </div>
     </div>
@@ -200,6 +216,45 @@
     &copy; 2026 SMU Centre for Research on International Trade <!--| Designed and hosted on 
     <a href="https://pages.github.com/" target="_blank">GitHub Pages</a>-->
   </footer>
+
+  <!-- News ticker: builds the scrolling animation to fit however many <li> items there are -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var ul = document.querySelector('.news-ticker ul');
+      if (!ul) return;
+
+      var items = ul.querySelectorAll('li');
+      var n = items.length;
+
+      // Nothing to scroll with 0 or 1 item, or if the visitor prefers reduced motion
+      if (n < 2 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      var secondsPerItem = 4;   // how long each headline stays on screen
+      var itemHeight = 2;       // rem; must match the .news-ticker li height
+      var step = 100 / n;
+
+      // Copy the first item to the end so the loop wraps around seamlessly
+      var clone = items[0].cloneNode(true);
+      clone.setAttribute('aria-hidden', 'true');
+      clone.querySelectorAll('a').forEach(function (a) { a.tabIndex = -1; });
+      ul.appendChild(clone);
+
+      var frames = '';
+      for (var i = 0; i < n; i++) {
+        var start = (i * step).toFixed(2);
+        var hold = (i * step + step * 0.8).toFixed(2);
+        var top = -i * itemHeight;
+        frames += start + '% { top: ' + top + 'rem; } ' + hold + '% { top: ' + top + 'rem; } ';
+      }
+      frames += '100% { top: ' + (-n * itemHeight) + 'rem; }';
+
+      var style = document.createElement('style');
+      style.textContent = '@keyframes ticker-auto { ' + frames + ' }';
+      document.head.appendChild(style);
+
+      ul.style.animation = 'ticker-auto ' + (n * secondsPerItem) + 's linear infinite';
+    });
+  </script>
 
 </body>
 </html>
