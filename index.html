@@ -235,9 +235,8 @@
       var items = ul.querySelectorAll('li');
       var n = items.length;
 
-      // If everything already fits, or the visitor prefers reduced motion,
-      // leave the full list visible with no scrolling.
-      if (n <= visibleItems || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      // If everything already fits, just show the full list with no scrolling.
+      if (n <= visibleItems) return;
 
       ticker.style.height = (visibleItems * itemHeight) + 'rem';
       ticker.classList.add('is-ticking');
