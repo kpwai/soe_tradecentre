@@ -107,14 +107,18 @@
 
     .news-ticker {
       overflow: hidden;
-      height: 2rem;
       position: relative;
+      /* No fixed height here: without the script (or with reduced motion)
+         every item is listed. The script sets the window height when it animates. */
     }
 
     .news-ticker ul {
       list-style: none;
       padding: 0;
       margin: 0;
+    }
+
+    .news-ticker.is-ticking ul {
       position: absolute;
       left: 0;
       right: 0;
@@ -220,24 +224,33 @@
   <!-- News ticker: builds the scrolling animation to fit however many <li> items there are -->
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-      var ul = document.querySelector('.news-ticker ul');
+      var ticker = document.querySelector('.news-ticker');
+      var ul = ticker && ticker.querySelector('ul');
       if (!ul) return;
+
+      var visibleItems = 3;     // how many headlines are shown at once (1 = one at a time)
+      var secondsPerItem = 4;   // how long the list pauses before moving up one line
+      var itemHeight = 2;       // rem; must match the .news-ticker li height
 
       var items = ul.querySelectorAll('li');
       var n = items.length;
 
-      // Nothing to scroll with 0 or 1 item, or if the visitor prefers reduced motion
-      if (n < 2 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      // If everything already fits, or the visitor prefers reduced motion,
+      // leave the full list visible with no scrolling.
+      if (n <= visibleItems || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-      var secondsPerItem = 4;   // how long each headline stays on screen
-      var itemHeight = 2;       // rem; must match the .news-ticker li height
+      ticker.style.height = (visibleItems * itemHeight) + 'rem';
+      ticker.classList.add('is-ticking');
+
       var step = 100 / n;
 
-      // Copy the first item to the end so the loop wraps around seamlessly
-      var clone = items[0].cloneNode(true);
-      clone.setAttribute('aria-hidden', 'true');
-      clone.querySelectorAll('a').forEach(function (a) { a.tabIndex = -1; });
-      ul.appendChild(clone);
+      // Copy the first few items to the end so the loop wraps around seamlessly
+      for (var c = 0; c < visibleItems; c++) {
+        var clone = items[c].cloneNode(true);
+        clone.setAttribute('aria-hidden', 'true');
+        clone.querySelectorAll('a').forEach(function (a) { a.tabIndex = -1; });
+        ul.appendChild(clone);
+      }
 
       var frames = '';
       for (var i = 0; i < n; i++) {
