@@ -96,7 +96,6 @@
       background: #f1f1f1;
       padding: 1rem;
       border-radius: 8px;
-      overflow: hidden;
     }
 
     .news h2 {
@@ -104,27 +103,6 @@
       color: #003366;
       margin-top: 0;
     }
-
-    .news-ticker li.highlight {
-  font-weight: bold;
-  color: #003366;
-  border-left: 4px solid #ffcc00;
-  padding-left: 0.5rem;
-  background: linear-gradient(90deg, #fff3bf 0%, rgba(255, 243, 191, 0) 100%);
-}
-
-.news-ticker .badge {
-  display: inline-block;
-  margin-right: 0.5rem;
-  padding: 0 0.45rem;
-  line-height: 1.3rem;
-  font-size: 0.75rem;
-  font-weight: bold;
-  color: #003366;
-  background: #ffcc00;
-  border-radius: 999px;
-  vertical-align: middle;
-}
 
     .news-ticker {
       overflow: hidden;
@@ -148,12 +126,10 @@
     }
 
     /* Keep each headline on one line; long ones end with "…" */
+    /* Headlines wrap onto as many lines as they need; nothing is cut off */
     .news-ticker li {
-      height: 2rem;
-      line-height: 2rem;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      padding: 0.35rem 0;
+      line-height: 1.4;
     }
 
     .news-ticker a {
@@ -164,6 +140,28 @@
     .news-ticker a:hover,
     .news-ticker a:focus {
       text-decoration: underline;
+    }
+
+    /* Highlighted news item: gold accent bar, soft gold fade, bold navy text */
+    .news-ticker li.highlight {
+      font-weight: bold;
+      color: #003366;
+      border-left: 4px solid #ffcc00;
+      padding-left: 0.5rem;
+      background: linear-gradient(90deg, #fff3bf 0%, rgba(255, 243, 191, 0) 100%);
+    }
+
+    .news-ticker .badge {
+      display: inline-block;
+      margin-right: 0.5rem;
+      padding: 0 0.45rem;
+      line-height: 1.3rem;
+      font-size: 0.75rem;
+      font-weight: bold;
+      color: #003366;
+      background: #ffcc00;
+      border-radius: 999px;
+      vertical-align: middle;
     }
 
     /* Pause the ticker while the mouse is over it so visitors can read and click */
@@ -229,6 +227,8 @@
           <li><a href="https://economics.smu.edu.sg/soetrade/events/conference/2026" target="_blank" rel="noopener">2026 SMU Trade Conference – Policy</a>&nbsp;· 26 May 2026</li>
           <li><a href="https://economics.smu.edu.sg/soetrade/events/conference/2026" target="_blank" rel="noopener">2026 SMU Trade Conference</a>&nbsp;· 25–26 May 2026</li>
           <li class="highlight"><span class="badge">Launch</span>Site launched on January 1, 2026.</li>
+          <li>Research outputs will be posted under the Research tab.</li>
+          <li>Research data will be available under the Data tab soon.</li>
           <li><a href="https://phys.org/news/2024-08-wto-imbalances.html" target="_blank" rel="noopener">Examining WTO system amidst growing trade imbalances</a>&nbsp;· 30 Aug 2024 · <a href="https://ink.library.smu.edu.sg/soe_research/2753/" target="_blank" rel="noopener">Paper</a></li>
         </ul>
       </div>
@@ -240,7 +240,7 @@
     <a href="https://pages.github.com/" target="_blank">GitHub Pages</a>-->
   </footer>
 
-  <!-- News ticker: builds the scrolling animation to fit however many <li> items there are -->
+  <!-- News ticker: scrolls one headline at a time; works with headlines of any length -->
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       var ticker = document.querySelector('.news-ticker');
@@ -248,8 +248,7 @@
       if (!ul) return;
 
       var visibleItems = 3;     // how many headlines are shown at once (1 = one at a time)
-      var secondsPerItem = 4;   // how long the list pauses before moving up one line
-      var itemHeight = 2;       // rem; must match the .news-ticker li height
+      var secondsPerItem = 4;   // how long the list pauses before moving up one headline
 
       var items = ul.querySelectorAll('li');
       var n = items.length;
@@ -257,10 +256,7 @@
       // If everything already fits, just show the full list with no scrolling.
       if (n <= visibleItems) return;
 
-      ticker.style.height = (visibleItems * itemHeight) + 'rem';
       ticker.classList.add('is-ticking');
-
-      var step = 100 / n;
 
       // Copy the first few items to the end so the loop wraps around seamlessly
       for (var c = 0; c < visibleItems; c++) {
@@ -270,20 +266,50 @@
         ul.appendChild(clone);
       }
 
-      var frames = '';
-      for (var i = 0; i < n; i++) {
-        var start = (i * step).toFixed(2);
-        var hold = (i * step + step * 0.8).toFixed(2);
-        var top = -i * itemHeight;
-        frames += start + '% { top: ' + top + 'rem; } ' + hold + '% { top: ' + top + 'rem; } ';
-      }
-      frames += '100% { top: ' + (-n * itemHeight) + 'rem; }';
-
       var style = document.createElement('style');
-      style.textContent = '@keyframes ticker-auto { ' + frames + ' }';
       document.head.appendChild(style);
+      var version = 0;
 
-      ul.style.animation = 'ticker-auto ' + (n * secondsPerItem) + 's linear infinite';
+      // Measure the real height of every headline (they can wrap onto
+      // several lines) and build the animation from those measurements.
+      function build() {
+        var all = ul.querySelectorAll('li');
+        var tops = [], bottoms = [];
+        for (var i = 0; i < all.length; i++) {
+          tops.push(all[i].offsetTop - all[0].offsetTop);
+          bottoms.push(tops[i] + all[i].offsetHeight);
+        }
+
+        // Window is tall enough for the tallest group of visible headlines
+        var windowHeight = 0;
+        for (var g = 0; g < n; g++) {
+          windowHeight = Math.max(windowHeight, bottoms[g + visibleItems - 1] - tops[g]);
+        }
+        ticker.style.height = windowHeight + 'px';
+
+        var step = 100 / n;
+        var frames = '';
+        for (var k = 0; k < n; k++) {
+          var start = (k * step).toFixed(2);
+          var hold = (k * step + step * 0.8).toFixed(2);
+          frames += start + '% { top: ' + (-tops[k]) + 'px; } ' + hold + '% { top: ' + (-tops[k]) + 'px; } ';
+        }
+        frames += '100% { top: ' + (-tops[n]) + 'px; }';
+
+        version++;
+        var name = 'ticker-auto-' + version;
+        style.textContent = '@keyframes ' + name + ' { ' + frames + ' }';
+        ul.style.animation = name + ' ' + (n * secondsPerItem) + 's linear infinite';
+      }
+
+      build();
+
+      // Headlines re-wrap when the window is resized, so measure again
+      var resizeTimer;
+      window.addEventListener('resize', function () {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(build, 200);
+      });
     });
   </script>
 
